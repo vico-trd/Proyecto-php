@@ -12,11 +12,8 @@ $dotenv->load();
 // Iniciar sesión
 session_start();
 
-// Crear el router y registrar rutas
 $router = new Router();
 
-// --- Rutas ---
-$router->get('', [App\Controllers\HomeController::class, 'index']);
+require_once __DIR__ . '/../routes/web.php';
 
-// Despachar la petición
 $router->dispatch();
