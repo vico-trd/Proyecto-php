@@ -69,11 +69,8 @@ class UserRepository implements RepositoryInterface
         return $users;
     }
 
-    public function save(User $user): bool
+    public function save(object $user): bool
     {
-        if(!$user instanceof User){
-            return false;
-        }
 
         if($user->id){
             $stmt = $this->db->prepare('UPDATE users SET name = :name, email = :email, password = :password, role = :role WHERE id = :id');
