@@ -6,17 +6,9 @@ interface RepositoryInterface {
 
     public function findById(int $id): ?object;
 
-    public function findAll():array;
+    public function findAll(): array;
 
+    public function save(object $object): bool;
 
-    public function save(object $object):bool;
-
-    public function delete(int $id):bool;
-
-
-
-
-
-
-
+    public function delete(int $id): bool;
 }

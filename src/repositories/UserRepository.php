@@ -71,6 +71,9 @@ class UserRepository implements RepositoryInterface
 
     public function save(object $user): bool
     {
+        if(!$user instanceof User){
+            return false;
+        }
 
         if($user->id){
             $stmt = $this->db->prepare('UPDATE users SET name = :name, email = :email, password = :password, role = :role WHERE id = :id');
@@ -90,33 +93,11 @@ class UserRepository implements RepositoryInterface
                 'role' => $user->role
             ]);
         }
-       
     }
 
     public function delete(int $id):bool{
         $stmt = $this->db->prepare('DELETE FROM users WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
-
-    
-
-
-    
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ?>

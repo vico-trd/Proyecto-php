@@ -10,10 +10,12 @@ class OrderRepository implements RepositoryInterface
 {
     private PDO $db;
 
+
     public function __construct()
     {
         $this->db = Database::getInstance()->getConnection();
     }
+
 
     public function findById(int $id): ?Order
     {
@@ -51,10 +53,13 @@ class OrderRepository implements RepositoryInterface
 
     public function save(object $order): bool
     {
+        if (!$order instanceof Order) {
+            return false;
+        }
+
         if ($order->id) {
             $stmt = $this->db->prepare('UPDATE orders SET user_id = :user_id, total = :total, status = :status WHERE id = :id');
             return $stmt->execute([
-                'id' => $order->id,
                 'user_id' => $order->user_id,
                 'total' => $order->total,
                 'status' => $order->status,
@@ -64,7 +69,7 @@ class OrderRepository implements RepositoryInterface
             return $stmt->execute([
                 'user_id' => $order->user_id,
                 'total' => $order->total,
-                'status' => $order->status,
+                'status' => $order->status
             ]);
         }
     }
