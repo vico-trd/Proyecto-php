@@ -12,6 +12,9 @@
         <a class="navbar-brand" href="/Proyecto-php/public/">E-commerce</a>
         <div class="navbar-nav ms-auto">
             <?php if (isset($_SESSION['user'])): ?>
+                <?php if ($_SESSION['user']['role'] === 'admin'): ?>
+                    <a class="nav-link" href="/Proyecto-php/public/admin/users/create">Crear usuario</a>
+                <?php endif; ?>
                 <span class="nav-link text-light"><?= htmlspecialchars($_SESSION['user']['name']) ?></span>
                 <a class="nav-link" href="/Proyecto-php/public/logout">Cerrar sesión</a>
             <?php else: ?>
