@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS order_items{
     FOREIGN KEY (product_id) REFERENCES products(id)
 }
 
-INSERT INTO users (name,email,password,role) VALUES ('admin', 'admin@gmail.com', 'admin123', 'admin');
+INSERT INTO users (name, email, password, role) VALUES ('admin', 'admin@gmail.com', '$2y$10$0B5TTZYByz34U1FXazXj9.9PCGrhEU49kwGcfWF87GWN26O5TXibm', 'admin');
 
 
 

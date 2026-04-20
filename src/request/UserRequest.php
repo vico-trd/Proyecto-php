@@ -45,13 +45,16 @@ class UserRequest
             $this->errors['email'] = 'El email es obligatorio.';
         } elseif (!filter_var($this->data['email'], FILTER_VALIDATE_EMAIL)) {
             $this->errors['email'] = 'El formato del email no es válido.';
+        } elseif (strlen($this->data['email']) > 100) {
+            $this->errors['email'] = 'El email no puede superar los 100 caracteres.';
         }
 
-        // Password
         if (empty($this->data['password'])) {
             $this->errors['password'] = 'La contraseña es obligatoria.';
         } elseif (strlen($this->data['password']) < 6) {
             $this->errors['password'] = 'La contraseña debe tener al menos 6 caracteres.';
+        } elseif (strlen($this->data['password']) > 50) {
+            $this->errors['password'] = 'La contraseña no puede superar los 50 caracteres.';
         }
 
         return empty($this->errors);
