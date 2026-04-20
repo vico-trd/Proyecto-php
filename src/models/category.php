@@ -7,7 +7,7 @@ class Category{
     public string $description;
 
 
-    public function __construct(string $name, string $description){
+    public function __construct(int $id, string $name, string $description){
 
         $this->id=$id;
         $this->name=$name;

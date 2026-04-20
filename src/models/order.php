@@ -1,5 +1,5 @@
 <?php
-namespace App\Models\Order;
+namespace App\Models;
 
 class Order{
     public int $id;
@@ -8,7 +8,7 @@ class Order{
     public string $status;
 
 
-    public function __construct(float $total, string $status){
+    public function __construct(int $id, int $user_id, float $total, string $status){
 
     $this->id=$id;
     $this->user_id=$user_id;

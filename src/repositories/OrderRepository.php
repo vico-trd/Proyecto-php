@@ -41,11 +41,11 @@ public function findById(int $id): ?Order{
         $stmt= $this->db->query('SELECT * FROM orders');
         $orders=[];
         while ($data = $stmt->fetch()) {
-            $users[] = new Order(
+            $orders[] = new Order(
                 id: $data['id'],
                 user_id: $data['user_id'],
-                total: $data['email'],
-                status: $data['password']
+                total: $data['total'],
+                status: $data['status']
             );
         }
 
@@ -59,22 +59,19 @@ public function findById(int $id): ?Order{
         }
 
         if($order->id){
-            $stmt = $this->db->prepare('UPDATE orders SET id = :id, user_id = :user_id, total = :total, status = :status WHERE id = :id');
+            $stmt = $this->db->prepare('UPDATE orders SET user_id = :user_id, total = :total, status = :status WHERE id = :id');
             return $stmt->execute([
                 'id' => $order->id,
                 'user_id' => $order->user_id,
                 'total' => $order->total,
                 'status' => $order->status
-                
             ]);
         }else{
-            $stmt = $this->db->prepare('INSERT INTO orders (id, user_id, total, status) VALUES (:id, :user_id, :toal, :status)');
+            $stmt = $this->db->prepare('INSERT INTO orders (user_id, total, status) VALUES (:user_id, :total, :status)');
             return $stmt->execute([
-                'id' => $order->id,
                 'user_id' => $order->user_id,
                 'total' => $order->total,
                 'status' => $order->status
-                
             ]);
         }
        

@@ -2,7 +2,7 @@
 namespace App\Repositories;
 
 use PDO;
-use App\Core\DataBase;
+use App\Core\Database;
 use App\Models\Product;
 
 
@@ -19,7 +19,7 @@ public function __construct(){
 
 public function findById(int $id): ?Product{
 
-$stmt= $this->db->prepare('SELECT * FROM Product WHERE id= :id');
+$stmt= $this->db->prepare('SELECT * FROM products WHERE id= :id');
 $stmt->execute(['id'=>$id]);
 $data= $stmt->fetch();
 
@@ -30,12 +30,14 @@ if($data){
         id: $data['id'],
         name:  $data['name'],
         category_id: $data['category_id'],
-        text: $data['text'],
+        description: $data['description'],
         price: $data['price'],
         stock: $data['stock'],
         image: $data['image']
     );
 }
+
+return null;
 
 }
 
@@ -63,31 +65,33 @@ public function findAll(): array{
             return false;
         }
 
-        if($product->category_id){
-            $stmt = $this->db->prepare('UPDATE products SET name = :name, description = :description, price = :price, stock = :stock WHERE category_id = :category_id');
+        if($product->id){
+            $stmt = $this->db->prepare('UPDATE products SET name = :name, category_id = :category_id, description = :description, price = :price, stock = :stock WHERE id = :id');
             return $stmt->execute([
+                'id' => $product->id,
                 'name' => $product->name,
-                'category_id' => $product->email,
+                'category_id' => $product->category_id,
                 'description' => $product->description,
                 'price' => $product->price,
                 'stock' => $product->stock
             ]);
         }else{
-            $stmt = $this->db->prepare('INSERT INTO products (name, category_id, description, price,stock,image) VALUES (:name, :category_id, :description, :price,:stock,:image)');
+            $stmt = $this->db->prepare('INSERT INTO products (name, category_id, description, price, stock, image) VALUES (:name, :category_id, :description, :price, :stock, :image)');
             return $stmt->execute([
                 'name' => $product->name,
                 'category_id' => $product->category_id,
                 'description' => $product->description,
                 'price' => $product->price,
-                'stock'=>$product->stock
+                'stock' => $product->stock,
+                'image' => $product->image
             ]);
         }
        
     }
 
-    public function delete(int $category_id):bool{
-        $stmt = $this->db->prepare('DELETE FROM products WHERE category_id = :category_id');
-        return $stmt->execute(['category_id' => $category_id]);
+    public function delete(int $id):bool{
+        $stmt = $this->db->prepare('DELETE FROM products WHERE id = :id');
+        return $stmt->execute(['id' => $id]);
     }
 
     
