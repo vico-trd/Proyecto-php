@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 interface RepositoryInterface {
 
-    public function findById(int $id):object;
+    public function findById(int $id): ?object;
 
     public function findAll():array;
 
