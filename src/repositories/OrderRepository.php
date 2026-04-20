@@ -10,10 +10,12 @@ class OrderRepository implements RepositoryInterface
 {
     private PDO $db;
 
+
     public function __construct()
     {
         $this->db = Database::getInstance()->getConnection();
     }
+
 
     public function findById(int $id): ?Order
     {
@@ -61,7 +63,6 @@ class OrderRepository implements RepositoryInterface
                 'user_id' => $order->user_id,
                 'total' => $order->total,
                 'status' => $order->status,
-                'id' => $order->id
             ]);
         } else {
             $stmt = $this->db->prepare('INSERT INTO orders (user_id, total, status) VALUES (:user_id, :total, :status)');

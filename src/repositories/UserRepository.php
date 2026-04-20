@@ -71,7 +71,7 @@ class UserRepository implements RepositoryInterface
 
     public function save(object $user): bool
     {
-        if (!$user instanceof User) {
+        if(!$user instanceof User){
             return false;
         }
 
@@ -93,33 +93,11 @@ class UserRepository implements RepositoryInterface
                 'role' => $user->role
             ]);
         }
-       
     }
 
     public function delete(int $id):bool{
         $stmt = $this->db->prepare('DELETE FROM users WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
-
-    
-
-
-    
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ?>

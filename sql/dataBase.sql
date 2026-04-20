@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(100) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL DEFAULT 'user'
 );
 
@@ -43,4 +43,13 @@ CREATE TABLE IF NOT EXISTS order_items (
     price DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(id),
     FOREIGN KEY (product_id) REFERENCES products(id)
+<<<<<<< HEAD
 );
+=======
+);
+
+INSERT INTO users (name, email, password, role) VALUES ('admin', 'admin@gmail.com', '$2y$10$9p47f0w6lyenVHBW6ww.Bu/70aZjcBFXYdBZfZS0Zs2krdAcS17V6', 'admin');
+
+
+
+>>>>>>> 0e9b15ea868dbb1a0fdfd421c84f65ad52541c44

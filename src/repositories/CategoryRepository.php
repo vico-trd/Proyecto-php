@@ -8,7 +8,7 @@ use App\Models\Category;
 
 class CategoryRepository implements RepositoryInterface
 {
-    private PDO $db;
+        private PDO $db;
 
     public function __construct()
     {
@@ -23,9 +23,9 @@ class CategoryRepository implements RepositoryInterface
 
         if ($data) {
             return new Category(
+                id: (int)$data['id'],
                 name: $data['name'],
                 description: $data['description'],
-                id: (int)$data['id'],
             );
         }
 
@@ -55,9 +55,9 @@ class CategoryRepository implements RepositoryInterface
         $categories = [];
         while ($data = $stmt->fetch()) {
             $categories[] = new Category(
+                id: (int)$data['id'],
                 name: $data['name'],
                 description: $data['description'],
-                id: (int)$data['id'],
             );
         }
 
@@ -85,6 +85,7 @@ class CategoryRepository implements RepositoryInterface
             ]);
         }
     }
+
 
     public function delete(int $id): bool
     {
