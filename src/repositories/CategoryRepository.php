@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use PDO;
 use App\Core\Database;
-use App\Models\User;
+use App\Models\Category;
 
 class CategoryRepository implements RepositoryInterface
 {
@@ -48,28 +48,20 @@ public function __construct()
     }
 
 
-     public function save( $category): bool
+     public function save(Category $category): bool
     {
-        if(!$category instanceof Category){
-            return false;
-        }
-
         if($category->id){
-            $stmt = $this->db->prepare('UPDATE categories SET name = :name, description= :description WHERE id = :id');
+            $stmt = $this->db->prepare('UPDATE categories SET name = :name, description = :description WHERE id = :id');
             return $stmt->execute([
-                'name' => $user->name,
-                'email' => $user->email,
-                'password' => $user->password,
-                'role' => $user->role,
-                'id' => $user->id
+                'name' => $category->name,
+                'description' => $category->description,
+                'id' => $category->id
             ]);
         }else{
             $stmt = $this->db->prepare('INSERT INTO categories (name, description) VALUES (:name, :description)');
             return $stmt->execute([
-                'id'=>$category->id,
                 'name' => $category->name,
-                'description'=>$category->description,
-                
+                'description' => $category->description,
             ]);
         }
 
