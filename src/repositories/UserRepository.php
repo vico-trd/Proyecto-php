@@ -69,9 +69,9 @@ class UserRepository implements RepositoryInterface
         return $users;
     }
 
-    public function save(User $user): bool
+    public function save(object $user): bool
     {
-        if(!$user instanceof User){
+        if (!$user instanceof User) {
             return false;
         }
 

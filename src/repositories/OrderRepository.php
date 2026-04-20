@@ -6,89 +6,76 @@ use PDO;
 use App\Core\Database;
 use App\Models\Order;
 
+class OrderRepository implements RepositoryInterface
+{
+    private PDO $db;
 
-class OrderRepository implements RepositoryInterface{
-private PDO $db;
+    public function __construct()
+    {
+        $this->db = Database::getInstance()->getConnection();
+    }
 
-
-public function __construct(){
-    $this->db = Database::getInstance()->getConnection();
-
-}
-
-
-public function findById(int $id): ?Order{
+    public function findById(int $id): ?Order
+    {
         $stmt = $this->db->prepare('SELECT * FROM orders WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch();
 
         if ($data) {
             return new Order(
-                id: $data['id'],
-                user_id: $data['user_id'],
-                total: $data['total'],
+                id: (int)$data['id'],
+                user_id: (int)$data['user_id'],
+                total: (float)$data['total'],
                 status: $data['status']
-                
             );
         }
 
         return null;
     }
 
-
-
-    public function findAll(): array{
-        $stmt= $this->db->query('SELECT * FROM orders');
-        $orders=[];
+    public function findAll(): array
+    {
+        $stmt = $this->db->query('SELECT * FROM orders');
+        $orders = [];
         while ($data = $stmt->fetch()) {
-            $users[] = new Order(
-                id: $data['id'],
-                user_id: $data['user_id'],
-                total: $data['email'],
-                status: $data['password']
+            $orders[] = new Order(
+                id: (int)$data['id'],
+                user_id: (int)$data['user_id'],
+                total: (float)$data['total'],
+                status: $data['status']
             );
         }
 
         return $orders;
     }
 
-    public function save(Order $order): bool
+    public function save(object $order): bool
     {
-        if(!$order instanceof Order){
+        if (!$order instanceof Order) {
             return false;
         }
 
-        if($order->id){
-            $stmt = $this->db->prepare('UPDATE orders SET id = :id, user_id = :user_id, total = :total, status = :status WHERE id = :id');
+        if ($order->id) {
+            $stmt = $this->db->prepare('UPDATE orders SET user_id = :user_id, total = :total, status = :status WHERE id = :id');
             return $stmt->execute([
-                'id' => $order->id,
                 'user_id' => $order->user_id,
                 'total' => $order->total,
-                'status' => $order->status
-                
+                'status' => $order->status,
+                'id' => $order->id
             ]);
-        }else{
-            $stmt = $this->db->prepare('INSERT INTO orders (id, user_id, total, status) VALUES (:id, :user_id, :toal, :status)');
+        } else {
+            $stmt = $this->db->prepare('INSERT INTO orders (user_id, total, status) VALUES (:user_id, :total, :status)');
             return $stmt->execute([
-                'id' => $order->id,
                 'user_id' => $order->user_id,
                 'total' => $order->total,
                 'status' => $order->status
-                
             ]);
         }
-       
     }
 
-    public function delete(int $id):bool{
+    public function delete(int $id): bool
+    {
         $stmt = $this->db->prepare('DELETE FROM orders WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
-
-
-
-
-
-
-
 }

@@ -10,17 +10,11 @@ class OrderItem{
     public int $quantity;
     public float $price;
 
-    public function __construct(int $quantity, float $price){
+    public function __construct(int $id, int $order_id, int $product_id, int $quantity, float $price){
         $this->id=$id;
         $this->order_id=$order_id;
         $this->product_id=$product_id;
         $this->quantity=$quantity;
         $this->price=$price;
-
-
-
     }
-
-
-
 }

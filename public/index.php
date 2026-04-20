@@ -12,11 +12,22 @@ $dotenv->load();
 // Iniciar sesión
 session_start();
 
+// URL base del proyecto (ajustar si cambia la ubicación)
+define('BASE_URL', '/Proyecto-php/public/index.php?url=');
+
 // Crear el router y registrar rutas
 $router = new Router();
 
 // --- Rutas ---
 $router->get('', [App\Controllers\HomeController::class, 'index']);
+
+// --- Rutas de Categorías (protegidas por AdminMiddleware) ---
+$router->get('categorias', [App\Controllers\CategoriaController::class, 'index']);
+$router->get('categorias/crear', [App\Controllers\CategoriaController::class, 'crear']);
+$router->post('categorias/crear', [App\Controllers\CategoriaController::class, 'guardar']);
+$router->get('categorias/editar/{id}', [App\Controllers\CategoriaController::class, 'editar']);
+$router->post('categorias/editar/{id}', [App\Controllers\CategoriaController::class, 'actualizar']);
+$router->post('categorias/eliminar/{id}', [App\Controllers\CategoriaController::class, 'eliminar']);
 
 // Despachar la petición
 $router->dispatch();
