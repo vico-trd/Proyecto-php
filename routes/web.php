@@ -18,3 +18,10 @@ $router->post('admin/users/create', [AuthController::class, 'createUser']);
 
 $router->get('inicio', [\App\Controllers\HomeController::class, 'index']);
 $router->get('carrito', [\App\Controllers\CarritoController::class, 'index']);
+
+
+// Rutas para el maquetado que estamos creando
+$router->get('categoria', [\App\Controllers\CategoriaController::class, 'ver']);
+$router->get('producto', [\App\Controllers\ProductoController::class, 'show']);
+$router->get('checkout', [\App\Controllers\CheckoutController::class, 'index']);
+$router->get('confirmacion', [\App\Controllers\CheckoutController::class, 'confirmacion']);

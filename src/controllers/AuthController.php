@@ -8,12 +8,14 @@ use App\Repositories\UserRepository;
 use App\Models\User;
 
 class AuthController extends BaseController
+
+//HE COMENTADO USERREPOSITORY PRA QUE FUNCIONE EN LA PAGINA, Y VER EL MAQUETADO
 {
-    private UserRepository $userRepository;
+ //   private UserRepository $userRepository;
 
     public function __construct()
     {
-        $this->userRepository = new UserRepository();
+       // $this->userRepository = new UserRepository();
     }
 
     public function showRegister(): void

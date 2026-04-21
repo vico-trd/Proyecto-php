@@ -153,7 +153,7 @@
     <div class="hero-banner">
         <h1>Colección Primavera 2026</h1>
         <p>Estilo, comodidad y tendencia en cada prenda.</p>
-        <a href="/ProyectoPhp/public/categorias" class="btn-comprar">Ver Catálogo</a>
+        <a href="categoria" class="btn-comprar">Ver Catálogo</a>
     </div>
 
     <h2 class="seccion-titulo">Compra por Categoría</h2>
