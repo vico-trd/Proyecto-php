@@ -15,3 +15,6 @@ $router->get('logout', [AuthController::class, 'logout']);
 
 $router->get('admin/users/create', [AuthController::class, 'showCreateUser']);
 $router->post('admin/users/create', [AuthController::class, 'createUser']);
+
+$router->get('inicio', [\App\Controllers\HomeController::class, 'index']);
+$router->get('carrito', [\App\Controllers\CarritoController::class, 'index']);

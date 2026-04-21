@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Dotenv\Dotenv;
@@ -20,13 +19,13 @@ $router = new Router();
 
 require_once __DIR__ . '/../routes/web.php';
 
-// --- Rutas de Categorías (protegidas por AdminMiddleware) ---
-$router->get('categorias', [App\Controllers\CategoriaController::class, 'index']);
-$router->get('categorias/crear', [App\Controllers\CategoriaController::class, 'crear']);
-$router->post('categorias/crear', [App\Controllers\CategoriaController::class, 'guardar']);
-$router->get('categorias/editar/{id}', [App\Controllers\CategoriaController::class, 'editar']);
-$router->post('categorias/editar/{id}', [App\Controllers\CategoriaController::class, 'actualizar']);
-$router->post('categorias/eliminar/{id}', [App\Controllers\CategoriaController::class, 'eliminar']);
 
-// Despachar la petición
+// --- Rutas de Categorías ---
+$router->get('categorias', [\App\Controllers\CategoriaController::class, 'index']);
+$router->get('categorias/crear', [\App\Controllers\CategoriaController::class, 'crear']);
+$router->post('categorias/crear', [\App\Controllers\CategoriaController::class, 'guardar']);
+$router->get('categorias/editar/{id}', [\App\Controllers\CategoriaController::class, 'editar']);
+$router->post('categorias/editar/{id}', [\App\Controllers\CategoriaController::class, 'actualizar']);
+$router->post('categorias/eliminar/{id}', [\App\Controllers\CategoriaController::class, 'eliminar']);
+
 $router->dispatch();
