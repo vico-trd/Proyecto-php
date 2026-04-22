@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tienda de Ropa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
         .navbar { background-color: #1a1a1a; }
         .nav-link { color: #ffffff !important; }
@@ -27,8 +28,6 @@
         <a class="navbar-brand fw-bold" href="<?= BASE_URL ?>">CLOTHING STORE</a>
         
         <div class="navbar-nav ms-auto align-items-center">
-            <a class="nav-link" href="<?= BASE_URL ?>categoria">Tienda</a>
-
             <a class="nav-link me-3" href="<?= BASE_URL ?>carrito">
                 🛒 <span class="cart-badge">1</span>
             </a>

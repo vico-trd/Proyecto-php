@@ -11,8 +11,13 @@ class AdminMiddleware implements MiddlewareInterface
         }
 
         if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-            http_response_code(403);
-            echo "Acceso denegado. Solo administradores.";
+            if (defined('BASE_URL')) {
+                header('Location: ' . BASE_URL . '404');
+                exit();
+            }
+
+            http_response_code(404);
+            echo 'Recurso no encontrado.';
             exit();
         }
 

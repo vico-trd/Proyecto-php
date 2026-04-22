@@ -21,6 +21,7 @@ class UserRequest
             'name'     => isset($input['name']) ? htmlspecialchars(trim($input['name']), ENT_QUOTES, 'UTF-8') : '',
             'email'    => isset($input['email']) ? filter_var(trim($input['email']), FILTER_SANITIZE_EMAIL) : '',
             'password' => isset($input['password']) ? trim($input['password']) : '',
+            'confirm_password' => isset($input['confirm_password']) ? trim($input['confirm_password']) : '',
         ];
     }
 
@@ -51,10 +52,18 @@ class UserRequest
 
         if (empty($this->data['password'])) {
             $this->errors['password'] = 'La contraseña es obligatoria.';
-        } elseif (strlen($this->data['password']) < 6) {
-            $this->errors['password'] = 'La contraseña debe tener al menos 6 caracteres.';
+        } elseif (strlen($this->data['password']) < 8) {
+            $this->errors['password'] = 'La contraseña debe tener al menos 8 caracteres.';
         } elseif (strlen($this->data['password']) > 50) {
             $this->errors['password'] = 'La contraseña no puede superar los 50 caracteres.';
+        } elseif (!preg_match('/[A-Za-z]/', $this->data['password']) || !preg_match('/\d/', $this->data['password']) || !preg_match('/[^A-Za-z\d]/', $this->data['password'])) {
+            $this->errors['password'] = 'La contraseña debe incluir letras, numeros y al menos un simbolo.';
+        }
+
+        if (empty($this->data['confirm_password'])) {
+            $this->errors['confirm_password'] = 'Debes confirmar la contraseña.';
+        } elseif ($this->data['password'] !== $this->data['confirm_password']) {
+            $this->errors['confirm_password'] = 'Las contraseñas no coinciden.';
         }
 
         return empty($this->errors);
