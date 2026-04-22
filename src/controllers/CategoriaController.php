@@ -12,11 +12,10 @@ class CategoriaController
 
     public function __construct()
     {
-        $this->service = new CategoriaService();
+    $this->service = new CategoriaService();
 
-        // Ejecutar el middleware de administración
-        $middleware = new AdminMiddleware();
-        $middleware->handle(fn() => true); // continúa normalmente
+    $middleware = new AdminMiddleware();
+    $middleware->handle(fn() => true);
     }
 
     /**
@@ -76,8 +75,8 @@ class CategoriaController
         $categoria = $this->service->obtenerPorId((int)$id);
 
         if (!$categoria) {
-            http_response_code(404);
-            echo 'Categoría no encontrada.';
+            header('Location: ' . BASE_URL . '404');
+            exit();
             return;
         }
 
@@ -133,5 +132,10 @@ class CategoriaController
 
         header('Location: ' . BASE_URL . 'categorias');
         exit();
+    }
+    public function ver(): void
+    {
+        // Por ahora, como es maquetado, no necesitamos llamar al service
+        require __DIR__ . '/../views/categoria/ver.php';
     }
 }

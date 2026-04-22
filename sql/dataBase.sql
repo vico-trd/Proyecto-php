@@ -34,22 +34,15 @@ CREATE TABLE IF NOT EXISTS orders (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
 CREATE TABLE IF NOT EXISTS order_items (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+        id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT NOT NULL,
     product_id INT NOT NULL,
     quantity INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(id),
     FOREIGN KEY (product_id) REFERENCES products(id)
-<<<<<<< HEAD
-);
-=======
 );
 
-INSERT INTO users (name, email, password, role) VALUES ('admin', 'admin@gmail.com', '$2y$10$9p47f0w6lyenVHBW6ww.Bu/70aZjcBFXYdBZfZS0Zs2krdAcS17V6', 'admin');
-
-
-
->>>>>>> 0e9b15ea868dbb1a0fdfd421c84f65ad52541c44
+NSERT INTO users (name, email, password, role)
+VALUES ('admin', 'admin@gmail.com', '$2y$10$9p47f0w6lyenVHBW6ww.Bu/70aZjcBFXYdBZfZS0Zs2krdAcS17V6', 'admin');
