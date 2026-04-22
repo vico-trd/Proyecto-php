@@ -13,5 +13,6 @@ Proyecto final de PHP, realizado por Alejandro Felipe, Alejandro Vico y Julio de
 5. **Confirmación:** Mensaje de éxito tras "simular" el pedido.
 
 
-composer require vlucas/phpdotenv
-composer require jasongrimes/paginator
+## composer require vlucas/phpdotenv
+
+## composer require jasongrimes/paginator
