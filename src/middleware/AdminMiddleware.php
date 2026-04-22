@@ -20,8 +20,13 @@ class AdminMiddleware implements MiddlewareInterface
         }
 
         if ($role !== 'admin') {
-            header('HTTP/1.1 403 Forbidden');
-            echo "Acceso denegado. Solo administradores.";
+            if (defined('BASE_URL')) {
+                header('Location: ' . BASE_URL . '404');
+                exit();
+            }
+
+            header('HTTP/1.1 404 Not Found');
+            echo 'Recurso no encontrado.';
             exit();
         }
 

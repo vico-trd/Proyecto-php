@@ -43,8 +43,13 @@ class Router
             }
         }
 
+        if (defined('BASE_URL')) {
+            header('Location: ' . BASE_URL . '404');
+            exit();
+        }
+
         header('HTTP/1.1 404 Not Found');
-        echo '404 - Página no encontrada';
+        echo '404 - Pagina no encontrada';
     }
 
     private function convertToRegex(string $path): string
