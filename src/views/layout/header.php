@@ -34,7 +34,11 @@
             </a>
 
             <?php if (isset($_SESSION['user'])): ?>
-                <span class="nav-link text-secondary me-2">Hola, <?= $_SESSION['user']['name'] ?></span>
+                <?php if ($_SESSION['user']['role'] === 'admin'): ?>
+                    <a class="nav-link" href="<?= BASE_URL ?>categorias">Gestión Categorías</a>
+                    <a class="nav-link" href="<?= BASE_URL ?>productos/gestion">Gestión Productos</a>
+                <?php endif; ?>
+                <span class="nav-link text-secondary me-2">Hola, <?= htmlspecialchars($_SESSION['user']['name']) ?></span>
                 <a class="nav-link btn btn-outline-danger btn-sm" href="<?= BASE_URL ?>logout">Salir</a>
             <?php else: ?>
                 <a class="nav-link" href="<?= BASE_URL ?>login">Login</a>
