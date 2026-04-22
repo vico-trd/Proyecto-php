@@ -75,7 +75,7 @@ class CategoriaController
         $categoria = $this->service->obtenerPorId((int)$id);
 
         if (!$categoria) {
-            http_response_code(404);
+            header('HTTP/1.1 404 Not Found');
             echo 'Categoría no encontrada.';
             return;
         }
