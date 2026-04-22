@@ -62,6 +62,7 @@ unset($_SESSION['mensaje'], $_SESSION['errores']);
                         <td><?= htmlspecialchars($cat->name, ENT_QUOTES, 'UTF-8') ?></td>
                         <td><?= htmlspecialchars($cat->description, ENT_QUOTES, 'UTF-8') ?></td>
                         <td class="actions">
+                            <a href="<?= BASE_URL ?>categoria/<?= (int)$cat->id ?>/productos" class="btn btn-primary">Ver productos</a>
                             <a href="<?= BASE_URL ?>categorias/editar/<?= (int)$cat->id ?>" class="btn btn-warning">Editar</a>
                             <form method="POST" action="<?= BASE_URL ?>categorias/eliminar/<?= (int)$cat->id ?>" onsubmit="return confirm('¿Estás seguro de eliminar esta categoría?');">
                                 <button type="submit" class="btn btn-danger">Eliminar</button>

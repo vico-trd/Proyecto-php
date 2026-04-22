@@ -11,13 +11,11 @@ class CategoriaController
     private CategoriaService $service;
 
     public function __construct()
-    //HE COMENTADO TODO LO DEL CONSTRUCT PARA QUE FUNCIONE Y PODER VER EL MAQUETADO
     {
-       // $this->service = new CategoriaService();
+    $this->service = new CategoriaService();
 
-        // Ejecutar el middleware de administración
-      //  $middleware = new AdminMiddleware();
-       // $middleware->handle(fn() => true); // continúa normalmente
+    $middleware = new AdminMiddleware();
+    $middleware->handle(fn() => true);
     }
 
     /**
