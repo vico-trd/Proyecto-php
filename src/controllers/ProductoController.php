@@ -100,8 +100,8 @@ class ProductoController
         $category = $this->categoriaService->obtenerPorId($categoryId);
 
         if (!$category) {
-            header('HTTP/1.1 404 Not Found');
-            echo 'Categoria no encontrada.';
+            header('Location: ' . BASE_URL . '404');
+            exit();
             return;
         }
 

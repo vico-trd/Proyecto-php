@@ -36,4 +36,7 @@ $router->post('productos/guardar', [\App\Controllers\ProductoController::class, 
 // --- Ruta publica de productos por categoria con paginacion ---
 $router->get('categoria/{id}/productos', [\App\Controllers\ProductoController::class, 'porCategoria']);
 
+// --- Ruta de error ---
+$router->get('404', [\App\Controllers\ErrorController::class, 'notFound']);
+
 $router->dispatch();

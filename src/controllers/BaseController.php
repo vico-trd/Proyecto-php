@@ -11,8 +11,13 @@ class BaseController
         $viewPath = __DIR__ . '/../views/' . $view . '.php';
 
         if (!file_exists($viewPath)) {
-            header('HTTP/1.1 500 Internal Server Error');
-            echo "Vista no encontrada: $view";
+            if ($view !== 'errors/404' && defined('BASE_URL')) {
+                header('Location: ' . BASE_URL . '404');
+                exit;
+            }
+
+            header('HTTP/1.1 404 Not Found');
+            echo 'Recurso no encontrado.';
             return;
         }
 
