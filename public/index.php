@@ -28,4 +28,12 @@ $router->get('categorias/editar/{id}', [\App\Controllers\CategoriaController::cl
 $router->post('categorias/editar/{id}', [\App\Controllers\CategoriaController::class, 'actualizar']);
 $router->post('categorias/eliminar/{id}', [\App\Controllers\CategoriaController::class, 'eliminar']);
 
+// --- Rutas de Productos (inventario, protegidas por AdminMiddleware) ---
+$router->get('productos/gestion', [\App\Controllers\ProductoController::class, 'gestion']);
+$router->get('productos/crear', [\App\Controllers\ProductoController::class, 'crear']);
+$router->post('productos/guardar', [\App\Controllers\ProductoController::class, 'guardar']);
+
+// --- Ruta publica de productos por categoria con paginacion ---
+$router->get('categoria/{id}/productos', [\App\Controllers\ProductoController::class, 'porCategoria']);
+
 $router->dispatch();

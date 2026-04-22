@@ -10,7 +10,16 @@ class AdminMiddleware implements MiddlewareInterface
             session_start();
         }
 
-        if (!isset($_SESSION['identity']) || $_SESSION['identity']->role !== 'admin') {
+        $identity = $_SESSION['identity'] ?? null;
+        $role = null;
+
+        if (is_object($identity)) {
+            $role = $identity->role ?? $identity->rol ?? null;
+        } elseif (is_array($identity)) {
+            $role = $identity['role'] ?? $identity['rol'] ?? null;
+        }
+
+        if ($role !== 'admin') {
             http_response_code(403);
             echo "Acceso denegado. Solo administradores.";
             exit();
