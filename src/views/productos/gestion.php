@@ -35,6 +35,7 @@
                     <th>Categoría</th>
                     <th>Precio</th>
                     <th>Stock</th>
+                    <th class="text-end">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -63,6 +64,17 @@
                             <span class="badge <?= (int)$producto->stock > 0 ? 'bg-success' : 'bg-danger' ?>">
                                 <?= (int)$producto->stock ?>
                             </span>
+                        </td>
+                        <td class="text-end">
+                            <a href="<?= BASE_URL ?>productos/editar/<?= (int)$producto->id ?>" class="btn btn-sm btn-warning me-1">
+                                <i class="bi bi-pencil me-1"></i>Editar
+                            </a>
+                            <form method="POST" action="<?= BASE_URL ?>productos/eliminar/<?= (int)$producto->id ?>" class="d-inline"
+                                  onsubmit="return confirm('¿Eliminar el producto «<?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?>»?');">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash me-1"></i>Eliminar
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>

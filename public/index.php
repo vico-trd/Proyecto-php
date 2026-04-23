@@ -32,6 +32,9 @@ $router->post('categorias/eliminar/{id}', [\App\Controllers\CategoriaController:
 $router->get('productos/gestion', [\App\Controllers\ProductoController::class, 'gestion']);
 $router->get('productos/crear', [\App\Controllers\ProductoController::class, 'crear']);
 $router->post('productos/guardar', [\App\Controllers\ProductoController::class, 'guardar']);
+$router->get('productos/editar/{id}', [\App\Controllers\ProductoController::class, 'editar']);
+$router->post('productos/editar/{id}', [\App\Controllers\ProductoController::class, 'actualizar']);
+$router->post('productos/eliminar/{id}', [\App\Controllers\ProductoController::class, 'eliminar']);
 
 // --- Ruta publica de productos por categoria con paginacion ---
 $router->get('categoria/{id}/productos', [\App\Controllers\ProductoController::class, 'porCategoria']);

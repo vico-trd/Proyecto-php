@@ -23,6 +23,94 @@ class ProductoService
         return $this->productRepository->findAll();
     }
 
+    public function obtenerPorId(int $id): ?\App\Models\Product
+    {
+        return $this->productRepository->findById($id);
+    }
+
+    public function editar(int $id, array $data, ?array $imageFile = null): bool|string
+    {
+        $product = $this->productRepository->findById($id);
+        if (!$product) {
+            return 'El producto no existe.';
+        }
+
+        $category = $this->categoryRepository->findById((int)$data['category_id']);
+        if (!$category) {
+            return 'La categoria seleccionada no existe.';
+        }
+
+        $imageName = $product->image; // mantener la imagen actual por defecto
+
+        if (is_array($imageFile) && ($imageFile['name'] ?? '') !== '') {
+            if (($imageFile['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+                return 'No se pudo procesar la imagen subida.';
+            }
+
+            $extension = strtolower(pathinfo((string)$imageFile['name'], PATHINFO_EXTENSION));
+            $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+            if (!in_array($extension, $allowed, true)) {
+                return 'El formato de imagen no esta permitido.';
+            }
+
+            $uploadDir = __DIR__ . '/../../public/uploads/images';
+            if (!is_dir($uploadDir) && !mkdir($uploadDir, 0775, true) && !is_dir($uploadDir)) {
+                return 'No se pudo crear la carpeta de imagenes.';
+            }
+
+            try {
+                $newImageName = time() . '_' . bin2hex(random_bytes(6)) . '.' . $extension;
+            } catch (\Exception $e) {
+                $newImageName = time() . '_' . uniqid('', true) . '.' . $extension;
+            }
+
+            $targetPath = $uploadDir . DIRECTORY_SEPARATOR . $newImageName;
+            if (!move_uploaded_file($imageFile['tmp_name'], $targetPath)) {
+                return 'No se pudo guardar la imagen en el servidor.';
+            }
+
+            // Borrar imagen anterior si existe
+            if ($imageName !== '') {
+                $oldPath = $uploadDir . DIRECTORY_SEPARATOR . $imageName;
+                if (file_exists($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+
+            $imageName = $newImageName;
+        }
+
+        $product = new \App\Models\Product(
+            name: $data['name'],
+            category_id: (int)$data['category_id'],
+            description: $data['description'],
+            price: (float)$data['price'],
+            stock: (int)$data['stock'],
+            image: $imageName,
+            id: $id
+        );
+
+        return $this->productRepository->save($product);
+    }
+
+    public function eliminar(int $id): bool
+    {
+        $product = $this->productRepository->findById($id);
+        if (!$product) {
+            return false;
+        }
+
+        // Borrar imagen del disco si existe
+        if (!empty($product->image)) {
+            $imagePath = __DIR__ . '/../../public/uploads/images/' . $product->image;
+            if (file_exists($imagePath)) {
+                @unlink($imagePath);
+            }
+        }
+
+        return $this->productRepository->delete($id);
+    }
+
     public function listarPorCategoriaPaginado(int $categoryId, int $currentPage, int $itemsPerPage = 6): array
     {
         $totalItems = $this->productRepository->countByCategory($categoryId);

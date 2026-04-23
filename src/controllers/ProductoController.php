@@ -91,6 +91,65 @@ class ProductoController
         exit();
     }
 
+    public function editar(int $id): void
+    {
+        $this->authorizeAdmin();
+
+        $producto = $this->productoService->obtenerPorId($id);
+        if (!$producto) {
+            header('Location: ' . BASE_URL . '404');
+            exit();
+        }
+
+        $categorias = $this->categoriaService->listar();
+        $errores = $_SESSION['errores'] ?? [];
+        $old = $_SESSION['old'] ?? [];
+        unset($_SESSION['errores'], $_SESSION['old']);
+
+        require __DIR__ . '/../views/productos/editar.php';
+    }
+
+    public function actualizar(int $id): void
+    {
+        $this->authorizeAdmin();
+
+        $request = new ProductoRequest();
+
+        if (!$request->validate($_POST, $_FILES)) {
+            $_SESSION['errores'] = $request->getErrors();
+            $_SESSION['old'] = $_POST;
+            header('Location: ' . BASE_URL . 'productos/editar/' . $id);
+            exit();
+        }
+
+        $data = $request->sanitize($_POST);
+        $imageFile = $_FILES['image'] ?? null;
+
+        $result = $this->productoService->editar($id, $data, $imageFile);
+
+        if ($result === true) {
+            $_SESSION['product_save'] = 'complete';
+            header('Location: ' . BASE_URL . 'productos/gestion');
+            exit();
+        }
+
+        $_SESSION['errores'] = ['general' => is_string($result) ? $result : 'No se pudo actualizar el producto.'];
+        $_SESSION['old'] = $_POST;
+        header('Location: ' . BASE_URL . 'productos/editar/' . $id);
+        exit();
+    }
+
+    public function eliminar(int $id): void
+    {
+        $this->authorizeAdmin();
+
+        $this->productoService->eliminar($id);
+
+        $_SESSION['product_save'] = 'complete';
+        header('Location: ' . BASE_URL . 'productos/gestion');
+        exit();
+    }
+
     public function porCategoria(int $categoryId): void
     {
         $categoryId = (int)$categoryId;
