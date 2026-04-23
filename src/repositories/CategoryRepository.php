@@ -87,6 +87,13 @@ class CategoryRepository implements RepositoryInterface
     }
 
 
+    public function countProductsByCategory(int $categoryId): int
+    {
+        $stmt = $this->db->prepare('SELECT COUNT(*) AS total FROM products WHERE category_id = :category_id');
+        $stmt->execute(['category_id' => $categoryId]);
+        return (int)($stmt->fetch()['total'] ?? 0);
+    }
+
     public function delete(int $id): bool
     {
         $stmt = $this->db->prepare('DELETE FROM categories WHERE id = :id');

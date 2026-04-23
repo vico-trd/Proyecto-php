@@ -133,10 +133,10 @@ class CategoriaController
         $id = (int)$id;
         $resultado = $this->service->eliminar($id);
 
-        if ($resultado) {
+        if ($resultado === true) {
             $_SESSION['mensaje'] = 'Categoría eliminada correctamente.';
         } else {
-            $_SESSION['errores'] = ['general' => 'No se pudo eliminar la categoría.'];
+            $_SESSION['errores'] = ['general' => is_string($resultado) ? $resultado : 'No se pudo eliminar la categoría.'];
         }
 
         header('Location: ' . BASE_URL . 'categorias');
