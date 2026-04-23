@@ -81,6 +81,31 @@ class OrderItemRepository implements RepositoryInterface
         $stmt = $this->db->prepare('DELETE FROM order_items WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
+
+    /**
+     * Elimina todos los items de un pedido (para reconstrucción).
+     */
+    public function deleteByOrderId(int $orderId): bool
+    {
+        $stmt = $this->db->prepare('DELETE FROM order_items WHERE order_id = :order_id');
+        return $stmt->execute(['order_id' => $orderId]);
+    }
+
+    /**
+     * Inserta un item en un pedido.
+     */
+    public function insertItem(int $orderId, int $productId, int $quantity, float $price): bool
+    {
+        $stmt = $this->db->prepare(
+            'INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (:order_id, :product_id, :quantity, :price)'
+        );
+        return $stmt->execute([
+            'order_id'   => $orderId,
+            'product_id' => $productId,
+            'quantity'   => $quantity,
+            'price'      => $price,
+        ]);
+    }
 }
 
 

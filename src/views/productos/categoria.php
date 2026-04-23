@@ -30,30 +30,33 @@ $nextUrl  = $paginator->getNextUrl();
     </div>
 <?php else: ?>
 
-    <!-- Grid de productos -->
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-4">
-        <?php foreach ($products as $product): ?>
-            <div class="col">
-                <div class="card h-100 shadow-sm border-0">
-                    <?php if (!empty($product->image)): ?>
-                        <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($product->image, ENT_QUOTES, 'UTF-8') ?>"
-                             alt="<?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?>"
-                             class="card-img-top" style="height:220px;object-fit:cover;">
+                <div style="padding: 12px;">
+                    <h3 style="font-size: 1rem; margin: 0 0 8px;">
+                        <?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?>
+                    </h3>
+                    <p style="margin: 0 0 10px; color: #444; min-height: 38px;">
+                        <?= htmlspecialchars($product->description, ENT_QUOTES, 'UTF-8') ?>
+                    </p>
+                    <p style="margin: 0 0 12px; font-weight: 700; color: #1f2937;">
+                        <?= number_format((float)$product->price, 2) ?> EUR
+                    </p>
+
+                    <?php if ($product->stock > 0): ?>
+                        <form method="POST" action="<?= BASE_URL ?>carrito/agregar"
+                              style="display:flex; gap:6px; align-items:center;">
+                            <input type="hidden" name="producto_id" value="<?= (int)$product->id ?>">
+                            <input type="number" name="cantidad" value="1" min="1"
+                                   max="<?= (int)$product->stock ?>"
+                                   style="width:55px; padding:5px 6px; border:1px solid #ccc; border-radius:5px; font-size:0.9rem;">
+                            <button type="submit"
+                                    style="flex:1; background:#1f2937; color:#fff; border:none; padding:7px 10px;
+                                           border-radius:5px; cursor:pointer; font-size:0.9rem; font-weight:600;">
+                                🛒 Añadir
+                            </button>
+                        </form>
                     <?php else: ?>
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:220px;">
-                            <i class="bi bi-image fs-1 text-muted"></i>
-                        </div>
+                        <p style="color:#e74c3c; font-size:0.85rem; margin:0;">Sin stock</p>
                     <?php endif; ?>
-                    <div class="card-body d-flex flex-column">
-                        <h6 class="card-title fw-semibold mb-1"><?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?></h6>
-                        <p class="card-text text-muted small flex-grow-1">
-                            <?= htmlspecialchars(mb_strimwidth($product->description, 0, 80, '…'), ENT_QUOTES, 'UTF-8') ?>
-                        </p>
-                        <div class="d-flex justify-content-between align-items-center mt-2">
-                            <span class="fw-bold text-danger fs-5"><?= number_format((float)$product->price, 2) ?> &euro;</span>
-                            <a href="<?= BASE_URL ?>producto" class="btn btn-sm btn-dark">Ver detalles</a>
-                        </div>
-                    </div>
                 </div>
             </div>
         <?php endforeach; ?>

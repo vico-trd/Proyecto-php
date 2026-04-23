@@ -185,20 +185,25 @@
         <?php foreach ($productos as $producto): ?>
         <div class="producto-card">
             <?php if (!empty($producto->image)): ?>
-                <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>"
-                     alt="<?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?>">
+                <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?>">
             <?php else: ?>
-                <div style="width:100%;height:280px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:15px;">
-                    <span style="color:#aaa;font-size:2rem;">&#128247;</span>
-                </div>
+                <img src="https://via.placeholder.com/400x280" alt="<?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?>">
             <?php endif; ?>
             <h3><?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?></h3>
-            <p class="precio"><?= number_format((float)$producto->price, 2) ?> &euro;</p>
-            <a href="<?= BASE_URL ?>producto" class="btn-carrito">Añadir al carrito</a>
+            <p class="precio"><?= number_format($producto->price, 2) ?> €</p>
+            <?php if ($producto->stock > 0): ?>
+                <form method="POST" action="<?= BASE_URL ?>carrito/agregar">
+                    <input type="hidden" name="producto_id" value="<?= (int)$producto->id ?>">
+                    <input type="hidden" name="cantidad" value="1">
+                    <button type="submit" class="btn-carrito">Añadir al carrito</button>
+                </form>
+            <?php else: ?>
+                <span class="btn-carrito" style="background:#e0e0e0;color:#888;cursor:not-allowed;">Sin stock</span>
+            <?php endif; ?>
         </div>
         <?php endforeach; ?>
     </div>
     <?php else: ?>
-    <p class="text-center text-muted mb-5">No hay productos disponibles todavía.</p>
+    <p style="text-align:center;color:#888;">No hay productos disponibles aún.</p>
     <?php endif; ?>
 </div>

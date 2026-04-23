@@ -126,4 +126,64 @@ class ProductRepository implements RepositoryInterface
         $stmt = $this->db->prepare('DELETE FROM products WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
+
+    /**
+     * Retorna los productos cuyo id está en el array dado.
+     *
+     * @param int[] $ids
+     * @return Product[]
+     */
+    public function findByIds(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        // Construimos placeholders para la consulta IN
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->db->prepare("SELECT * FROM products WHERE id IN ($placeholders)");
+        $stmt->execute(array_values($ids));
+
+        $products = [];
+        while ($data = $stmt->fetch()) {
+            $products[] = new Product(
+                id: (int)$data['id'],
+                name: $data['name'],
+                category_id: (int)$data['category_id'],
+                description: $data['description'] ?? '',
+                price: (float)$data['price'],
+                stock: (int)$data['stock'],
+                image: $data['image'] ?? ''
+            );
+        }
+
+        return $products;
+    }
+
+    /**
+     * Retorna los N productos más recientes con stock disponible.
+     */
+    public function findRecent(int $limit): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT * FROM products WHERE stock > 0 ORDER BY id DESC LIMIT :limit'
+        );
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $products = [];
+        while ($data = $stmt->fetch()) {
+            $products[] = new Product(
+                id: (int)$data['id'],
+                name: $data['name'],
+                category_id: (int)$data['category_id'],
+                description: $data['description'] ?? '',
+                price: (float)$data['price'],
+                stock: (int)$data['stock'],
+                image: $data['image'] ?? ''
+            );
+        }
+
+        return $products;
+    }
 }
