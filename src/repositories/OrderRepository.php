@@ -83,45 +83,63 @@ class OrderRepository implements RepositoryInterface
     /**
      * Busca el pedido 'pending' más reciente de un usuario.
      */
-    public function findPendingByUserId(int $userId): ?Order
-    {
-        $stmt = $this->db->prepare(
-            "SELECT * FROM orders WHERE user_id = :user_id AND status = 'pending' ORDER BY created_at DESC LIMIT 1"
+  // 1. BUSCAR POR USUARIO (Este es el que te daba el error Fatal)
+public function findPendingByUserId(int $userId): ?Order
+{
+    $stmt = $this->db->prepare(
+        "SELECT * FROM orders WHERE user_id = :user_id AND status = 'pending' ORDER BY created_at DESC LIMIT 1"
+    );
+    $stmt->execute(['user_id' => $userId]);
+    $data = $stmt->fetch();
+
+    if ($data) {
+        return new Order(
+            id: (int)$data['id'],
+            user_id: $data['user_id'] ? (int)$data['user_id'] : null,
+            total: (float)$data['total'],
+            status: $data['status']
         );
-        $stmt->execute(['user_id' => $userId]);
-        $data = $stmt->fetch();
-
-        if ($data) {
-            return new Order(
-                id: (int)$data['id'],
-                user_id: (int)$data['user_id'],
-                total: (float)$data['total'],
-                status: $data['status']
-            );
-        }
-
-        return null;
     }
+    return null;
+}
 
-    /**
-     * Crea un pedido pendiente para el usuario y devuelve su ID.
-     */
-    public function createPendingOrder(int $userId): int
-    {
-        $stmt = $this->db->prepare(
-            "INSERT INTO orders (user_id, total, status) VALUES (:user_id, 0, 'pending')"
+// 2. BUSCAR POR SESIÓN (Para invitados)
+public function findPendingBySessionId(string $sessionId): ?Order
+{
+    $stmt = $this->db->prepare(
+        "SELECT * FROM orders WHERE session_id = :session_id AND status = 'pending' LIMIT 1"
+    );
+    $stmt->execute(['session_id' => $sessionId]);
+    $data = $stmt->fetch();
+
+    if ($data) {
+        return new Order(
+            id: (int)$data['id'],
+            user_id: $data['user_id'] ? (int)$data['user_id'] : null,
+            total: (float)$data['total'],
+            status: $data['status']
         );
-        $stmt->execute(['user_id' => $userId]);
-
-        return (int)$this->db->lastInsertId();
     }
+    return null;
+}
 
-    /**
-     * Actualiza el importe total de un pedido.
-     */
+// 3. CREAR PEDIDO (Acepta ambos casos)
+public function createPendingOrder(?int $userId, ?string $sessionId = null): int
+{
+    $sql = "INSERT INTO orders (user_id, session_id, total, status) VALUES (:user_id, :session_id, 0, 'pending')";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([
+        'user_id' => $userId,
+        'session_id' => $sessionId
+    ]);
+    return (int)$this->db->lastInsertId();
+}
+
+
     public function updateTotal(int $orderId, float $total): bool
     {
         $stmt = $this->db->prepare('UPDATE orders SET total = :total WHERE id = :id');
         return $stmt->execute(['total' => $total, 'id' => $orderId]);
     }
+    
 }

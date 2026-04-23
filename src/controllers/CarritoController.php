@@ -153,51 +153,62 @@ class CarritoController extends BaseController
         $this->redirect('carrito');
     }
 
-    public function sincronizarConDB(): void
-    {
-        if (!isset($_SESSION['user']['id'])) {
-            return;
-        }
+   public function sincronizarConDB(): void
+{
+    $userId = $_SESSION['user']['id'] ?? null;
+    $sessionId = session_id();
+    $carrito = $_SESSION['carrito'] ?? [];
 
-        $userId  = (int)$_SESSION['user']['id'];
-        $carrito = $_SESSION['carrito'] ?? [];
-
-        $order = $this->orderRepository->findPendingByUserId($userId);
-
-        if (empty($carrito)) {
-            if ($order) {
-                $this->orderItemRepository->deleteByOrderId($order->id);
-                $this->orderRepository->delete($order->id);
-            }
-            return;
-        }
-
-        if (!$order) {
-            $orderId = $this->orderRepository->createPendingOrder($userId);
-        } else {
-            $orderId = $order->id;
-            $this->orderItemRepository->deleteByOrderId($orderId);
-        }
-
-        $ids           = array_map('intval', array_keys($carrito));
-        $productosList = $this->productoService->obtenerPorIds($ids);
-        $productMap    = [];
-        foreach ($productosList as $p) {
-            $productMap[$p->id] = $p;
-        }
-
-        $total = 0.0;
-        foreach ($carrito as $productoId => $cantidad) {
-            $productoId = (int)$productoId;
-            $cantidad   = (int)$cantidad;
-            $p = $productMap[$productoId] ?? null;
-            if (!$p) {
-                continue;
-            }
-            $this->orderItemRepository->insertItem($orderId, $productoId, $cantidad, $p->price);
-            $total += $p->price * $cantidad;
-        }
-
-        $this->orderRepository->updateTotal($orderId, $total);
+    // 1. Identificar si hay una orden previa (por usuario o por sesión)
+    if (!$userId) {
+        $_SESSION['carrito_temporal_id'] = $sessionId;
+        $order = $this->orderRepository->findPendingBySessionId($sessionId);
+    } else {
+        $order = $this->orderRepository->findPendingByUserId((int)$userId);
     }
+
+    // 2. Si el carrito está vacío, borramos la orden de la DB
+    if (empty($carrito)) {
+        if ($order) {
+            $this->orderItemRepository->deleteByOrderId($order->id);
+            $this->orderRepository->delete($order->id);
+        }
+        return;
+    }
+
+    // 3. Crear o limpiar la orden existente
+    if (!$order) {
+        $orderId = $this->orderRepository->createPendingOrder(
+            $userId ? (int)$userId : null, 
+            $userId ? null : $sessionId
+        );
+    } else {
+        $orderId = $order->id;
+        $this->orderItemRepository->deleteByOrderId($orderId);
+    }
+
+    // 4. Insertar los productos y calcular el total sobre la marcha
+    $ids = array_map('intval', array_keys($carrito));
+    $productosList = $this->productoService->obtenerPorIds($ids);
+    
+    $productMap = [];
+    foreach ($productosList as $p) {
+        $productMap[$p->id] = $p;
+    }
+
+    $totalAcumulado = 0.0;
+    foreach ($carrito as $productoId => $cantidad) {
+        $productoId = (int)$productoId;
+        $cantidad = (int)$cantidad;
+        $p = $productMap[$productoId] ?? null;
+
+        if ($p) {
+            $this->orderItemRepository->insertItem($orderId, $productoId, $cantidad, $p->price);
+            $totalAcumulado += $p->price * $cantidad;
+        }
+    }
+
+    // 5. Actualizar el total en la tabla 'orders' usando el repositorio
+    $this->orderRepository->updateTotal($orderId, $totalAcumulado);
+}
 }
