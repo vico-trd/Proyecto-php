@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Services\ProductoService;
 use App\Repositories\OrderRepository;
 use App\Repositories\OrderItemRepository;
+use App\Controllers\CarritoController;
 
 class CarritoController extends BaseController
 {
@@ -152,7 +153,7 @@ class CarritoController extends BaseController
         $this->redirect('carrito');
     }
 
-    private function sincronizarConDB(): void
+    public function sincronizarConDB(): void
     {
         if (!isset($_SESSION['user']['id'])) {
             return;

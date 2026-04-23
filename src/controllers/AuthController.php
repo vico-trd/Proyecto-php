@@ -6,6 +6,7 @@ use App\Request\UserRequest;
 use App\Request\LoginRequest;
 use App\Repositories\UserRepository;
 use App\Models\User;
+use App\Controllers\CarritoController;
 
 class AuthController extends BaseController
 {
@@ -60,36 +61,68 @@ class AuthController extends BaseController
     }
 
     public function login(): void
-    {
-        $request = new LoginRequest($_POST);
+{
+    $request = new LoginRequest($_POST);
 
-        if (!$request->validate()) {
-            $this->render('auth/login', [
-                'errors' => $request->getErrors(),
-                'old' => $request->all(),
-            ]);
-            return;
-        }
-
-        $user = $this->userRepository->findByEmail($request->get('email'));
-
-        if (!$user || !password_verify($request->get('password'), $user->password)) {
-            $this->render('auth/login', [
-                'errors' => ['email' => 'Credenciales incorrectas.'],
-                'old' => $request->all(),
-            ]);
-            return;
-        }
-
-        $_SESSION['user'] = [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'role' => $user->role,
-        ];
-
-        $this->redirect('');
+    if (!$request->validate()) {
+        $this->render('auth/login', [
+            'errors' => $request->getErrors(),
+            'old' => $request->all(),
+        ]);
+        return;
     }
+
+    $user = $this->userRepository->findByEmail($request->get('email'));
+
+    if (!$user || !password_verify($request->get('password'), $user->password)) {
+        $this->render('auth/login', [
+            'errors' => ['email' => 'Credenciales incorrectas.'],
+            'old' => $request->all(),
+        ]);
+        return;
+    }
+
+    // --- SESIÓN DEL USUARIO ---
+    $_SESSION['user'] = [
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'role' => $user->role,
+    ];
+
+    // --- RECUPERACIÓN DEL CARRITO ---
+    $orderRepo = new \App\Repositories\OrderRepository();
+    $orderItemRepo = new \App\Repositories\OrderItemRepository();
+
+    $pedidoPendiente = $orderRepo->findPendingByUserId($user->id);
+
+    if ($pedidoPendiente) {
+        $itemsGuardados = $orderItemRepo->findByOrderId($pedidoPendiente->id);
+        
+        if (!isset($_SESSION['carrito'])) {
+            $_SESSION['carrito'] = [];
+        }
+
+        foreach ($itemsGuardados as $item) {
+            $idProd = (int)$item->product_id;
+            $cantidad = (int)$item->quantity;
+
+            if (isset($_SESSION['carrito'][$idProd])) {
+                $_SESSION['carrito'][$idProd] += $cantidad;
+            } else {
+                $_SESSION['carrito'][$idProd] = $cantidad;
+            }
+        }
+
+        // Sincronizamos de vuelta: Si el usuario tenía cosas como invitado,
+        // ahora se guardarán oficialmente en la base de datos bajo su ID.
+        $carritoCtrl = new CarritoController();
+        $carritoCtrl->sincronizarConDB();
+    }
+
+    // Redirigir siempre al finalizar el proceso de login exitoso
+    $this->redirect('');
+}
 
     public function logout(): void
     {
