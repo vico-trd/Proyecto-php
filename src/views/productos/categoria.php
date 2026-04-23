@@ -2,82 +2,94 @@
 /** @var App\Models\Category $category */
 /** @var App\Models\Product[] $products */
 /** @var JasonGrimes\Paginator $paginator */
-$pages = $paginator->getPages();
-$prevUrl = $paginator->getPrevUrl();
-$nextUrl = $paginator->getNextUrl();
+$pages    = $paginator->getPages();
+$prevUrl  = $paginator->getPrevUrl();
+$nextUrl  = $paginator->getNextUrl();
 ?>
 <?php include_once __DIR__ . '/../layout/header.php'; ?>
 
-<section style="margin-bottom: 24px;">
-    <h1 style="margin-bottom: 8px;">Categoria: <?= htmlspecialchars($category->name, ENT_QUOTES, 'UTF-8') ?></h1>
-    <p style="color: #666; margin: 0;">
-        <?= htmlspecialchars($category->description ?: 'Productos disponibles en esta categoria.', ENT_QUOTES, 'UTF-8') ?>
-    </p>
-</section>
+<!-- Cabecera de categoría -->
+<div class="mb-4 pb-3 border-bottom">
+    <a href="<?= BASE_URL ?>" class="text-decoration-none text-muted small">
+        <i class="bi bi-house me-1"></i>Inicio
+    </a>
+    <span class="text-muted small mx-1">/</span>
+    <span class="small fw-semibold"><?= htmlspecialchars($category->name, ENT_QUOTES, 'UTF-8') ?></span>
+
+    <h1 class="h3 mt-2 mb-1"><?= htmlspecialchars($category->name, ENT_QUOTES, 'UTF-8') ?></h1>
+    <?php if ($category->description): ?>
+        <p class="text-muted mb-0"><?= htmlspecialchars($category->description, ENT_QUOTES, 'UTF-8') ?></p>
+    <?php endif; ?>
+</div>
 
 <?php if (empty($products)): ?>
-    <p>No hay productos disponibles en esta categoria.</p>
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-bag-x fs-1"></i>
+        <p class="mt-2">No hay productos disponibles en esta categoría.</p>
+        <a href="<?= BASE_URL ?>" class="btn btn-dark mt-1">Volver al inicio</a>
+    </div>
 <?php else: ?>
-    <section style="display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px;">
+
+    <!-- Grid de productos -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-4">
         <?php foreach ($products as $product): ?>
-            <article style="border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: #fff;">
-                <?php if (!empty($product->image)): ?>
-                    <img
-                        src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($product->image, ENT_QUOTES, 'UTF-8') ?>"
-                        alt="<?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?>"
-                        style="width: 100%; height: 170px; object-fit: cover;"
-                    >
-                <?php else: ?>
-                    <div style="height: 170px; background: #f3f3f3;"></div>
-                <?php endif; ?>
-
-                <div style="padding: 12px;">
-                    <h3 style="font-size: 1rem; margin: 0 0 8px;">
-                        <?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?>
-                    </h3>
-                    <p style="margin: 0 0 10px; color: #444; min-height: 38px;">
-                        <?= htmlspecialchars($product->description, ENT_QUOTES, 'UTF-8') ?>
-                    </p>
-                    <p style="margin: 0; font-weight: 700; color: #1f2937;">
-                        <?= number_format((float)$product->price, 2) ?> EUR
-                    </p>
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    <?php if (!empty($product->image)): ?>
+                        <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($product->image, ENT_QUOTES, 'UTF-8') ?>"
+                             alt="<?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?>"
+                             class="card-img-top" style="height:220px;object-fit:cover;">
+                    <?php else: ?>
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:220px;">
+                            <i class="bi bi-image fs-1 text-muted"></i>
+                        </div>
+                    <?php endif; ?>
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title fw-semibold mb-1"><?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?></h6>
+                        <p class="card-text text-muted small flex-grow-1">
+                            <?= htmlspecialchars(mb_strimwidth($product->description, 0, 80, '…'), ENT_QUOTES, 'UTF-8') ?>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <span class="fw-bold text-danger fs-5"><?= number_format((float)$product->price, 2) ?> &euro;</span>
+                            <a href="<?= BASE_URL ?>producto" class="btn btn-sm btn-dark">Ver detalles</a>
+                        </div>
+                    </div>
                 </div>
-            </article>
+            </div>
         <?php endforeach; ?>
-    </section>
+    </div>
 
+    <!-- Paginación Bootstrap -->
     <?php if ($pages): ?>
-        <nav aria-label="Paginacion" style="margin-top: 26px;">
-            <ul style="display: flex; gap: 8px; list-style: none; padding: 0; margin: 0; flex-wrap: wrap;">
-                <?php if ($prevUrl): ?>
-                    <li>
-                        <a href="<?= htmlspecialchars($prevUrl, ENT_QUOTES, 'UTF-8') ?>" style="display: inline-block; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; text-decoration: none; color: #222;">Anterior</a>
-                    </li>
-                <?php endif; ?>
+        <nav aria-label="Paginación de productos">
+            <ul class="pagination justify-content-center">
+                <li class="page-item <?= $prevUrl ? '' : 'disabled' ?>">
+                    <a class="page-link" href="<?= $prevUrl ? htmlspecialchars($prevUrl, ENT_QUOTES, 'UTF-8') : '#' ?>">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
 
                 <?php foreach ($pages as $page): ?>
-                    <li>
+                    <li class="page-item <?= $page['isCurrent'] ? 'active' : '' ?> <?= $page['url'] === null ? 'disabled' : '' ?>">
                         <?php if ($page['url'] === null): ?>
-                            <span style="display: inline-block; padding: 8px 12px; color: #555;">...</span>
+                            <span class="page-link">&hellip;</span>
                         <?php else: ?>
-                            <a
-                                href="<?= htmlspecialchars($page['url'], ENT_QUOTES, 'UTF-8') ?>"
-                                style="display: inline-block; padding: 8px 12px; border-radius: 6px; text-decoration: none; border: 1px solid <?= $page['isCurrent'] ? '#111' : '#ccc' ?>; background: <?= $page['isCurrent'] ? '#111' : '#fff' ?>; color: <?= $page['isCurrent'] ? '#fff' : '#222' ?>;"
-                            >
-                                <?= htmlspecialchars((string)$page['num'], ENT_QUOTES, 'UTF-8') ?>
+                            <a class="page-link" href="<?= htmlspecialchars($page['url'], ENT_QUOTES, 'UTF-8') ?>">
+                                <?= (int)$page['num'] ?>
                             </a>
                         <?php endif; ?>
                     </li>
                 <?php endforeach; ?>
 
-                <?php if ($nextUrl): ?>
-                    <li>
-                        <a href="<?= htmlspecialchars($nextUrl, ENT_QUOTES, 'UTF-8') ?>" style="display: inline-block; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; text-decoration: none; color: #222;">Siguiente</a>
-                    </li>
-                <?php endif; ?>
+                <li class="page-item <?= $nextUrl ? '' : 'disabled' ?>">
+                    <a class="page-link" href="<?= $nextUrl ? htmlspecialchars($nextUrl, ENT_QUOTES, 'UTF-8') : '#' ?>">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
             </ul>
         </nav>
     <?php endif; ?>
+
 <?php endif; ?>
 
 <?php include_once __DIR__ . '/../layout/footer.php'; ?>

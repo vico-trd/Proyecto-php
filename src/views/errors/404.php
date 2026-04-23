@@ -1,5 +1,8 @@
-<section style="padding: 48px 0; text-align: center;">
-    <h1 style="font-size: 2.4rem; margin-bottom: 12px;">Error 404</h1>
-    <p style="color: #555; margin-bottom: 22px;">La pagina que buscas no existe o no esta disponible.</p>
-    <a href="<?= BASE_URL ?>" style="display: inline-block; background: #111; color: #fff; text-decoration: none; padding: 10px 16px; border-radius: 6px;">Volver al inicio</a>
-</section>
+<div class="text-center py-5">
+    <div class="display-1 fw-bold text-muted">404</div>
+    <h2 class="mb-3">Página no encontrada</h2>
+    <p class="text-muted mb-4">La página que buscas no existe o no está disponible.</p>
+    <a href="<?= BASE_URL ?>" class="btn btn-dark btn-lg">
+        <i class="bi bi-house me-2"></i>Volver al inicio
+    </a>
+</div>

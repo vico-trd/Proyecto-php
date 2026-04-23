@@ -3,65 +3,102 @@
 /** @var array $errores */
 /** @var array $old */
 ?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Producto</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 700px; margin: 30px auto; padding: 0 20px; }
-        h1 { color: #333; }
-        label { display: block; margin-top: 16px; font-weight: bold; }
-        input[type="text"], input[type="number"], textarea, select { width: 100%; padding: 10px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
-        textarea { resize: vertical; min-height: 90px; }
-        .error { color: #cc3333; font-size: 13px; margin-top: 4px; }
-        .btn { display: inline-block; padding: 10px 20px; border-radius: 4px; text-decoration: none; color: #fff; font-size: 14px; border: none; cursor: pointer; margin-top: 20px; }
-        .btn-primary { background-color: #0066cc; }
-        .btn-secondary { background-color: #666; }
-    </style>
-</head>
-<body>
-    <h1>Nuevo Producto</h1>
+<?php require __DIR__ . '/../layout/header.php'; ?>
 
-    <?php if (!empty($errores['general'])): ?>
-        <div class="error"><?= htmlspecialchars($errores['general'], ENT_QUOTES, 'UTF-8') ?></div>
-    <?php endif; ?>
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0"><i class="bi bi-box-seam me-2"></i>Nuevo Producto</h4>
+            </div>
+            <div class="card-body p-4">
 
-    <form method="POST" action="<?= BASE_URL ?>productos/guardar" enctype="multipart/form-data">
-        <label for="name">Nombre *</label>
-        <input type="text" id="name" name="name" value="<?= htmlspecialchars($old['name'] ?? '', ENT_QUOTES, 'UTF-8') ?>" required>
-        <?php if (!empty($errores['name'])): ?><div class="error"><?= htmlspecialchars($errores['name'], ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
+                <?php if (!empty($errores['general'])): ?>
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i><?= htmlspecialchars($errores['general'], ENT_QUOTES, 'UTF-8') ?>
+                    </div>
+                <?php endif; ?>
 
-        <label for="category_id">Categoria *</label>
-        <select id="category_id" name="category_id" required>
-            <option value="">Selecciona una categoria</option>
-            <?php foreach ($categorias as $categoria): ?>
-                <option value="<?= (int)$categoria->id ?>" <?= ((int)($old['category_id'] ?? 0) === (int)$categoria->id) ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($categoria->name, ENT_QUOTES, 'UTF-8') ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-        <?php if (!empty($errores['category_id'])): ?><div class="error"><?= htmlspecialchars($errores['category_id'], ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
+                <form method="POST" action="<?= BASE_URL ?>productos/guardar" enctype="multipart/form-data">
 
-        <label for="description">Descripcion</label>
-        <textarea id="description" name="description"><?= htmlspecialchars($old['description'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label for="name" class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
+                            <input type="text" id="name" name="name"
+                                   class="form-control <?= !empty($errores['name']) ? 'is-invalid' : '' ?>"
+                                   value="<?= htmlspecialchars($old['name'] ?? '', ENT_QUOTES, 'UTF-8') ?>" required>
+                            <?php if (!empty($errores['name'])): ?>
+                                <div class="invalid-feedback"><?= htmlspecialchars($errores['name'], ENT_QUOTES, 'UTF-8') ?></div>
+                            <?php endif; ?>
+                        </div>
 
-        <label for="price">Precio *</label>
-        <input type="number" step="0.01" min="0" id="price" name="price" value="<?= htmlspecialchars($old['price'] ?? '', ENT_QUOTES, 'UTF-8') ?>" required>
-        <?php if (!empty($errores['price'])): ?><div class="error"><?= htmlspecialchars($errores['price'], ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
+                        <div class="col-md-4 mb-3">
+                            <label for="category_id" class="form-label fw-semibold">Categoría <span class="text-danger">*</span></label>
+                            <select id="category_id" name="category_id"
+                                    class="form-select <?= !empty($errores['category_id']) ? 'is-invalid' : '' ?>" required>
+                                <option value="">Selecciona…</option>
+                                <?php foreach ($categorias as $categoria): ?>
+                                    <option value="<?= (int)$categoria->id ?>"
+                                        <?= ((int)($old['category_id'] ?? 0) === (int)$categoria->id) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($categoria->name, ENT_QUOTES, 'UTF-8') ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <?php if (!empty($errores['category_id'])): ?>
+                                <div class="invalid-feedback"><?= htmlspecialchars($errores['category_id'], ENT_QUOTES, 'UTF-8') ?></div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
 
-        <label for="stock">Stock *</label>
-        <input type="number" min="0" id="stock" name="stock" value="<?= htmlspecialchars($old['stock'] ?? '0', ENT_QUOTES, 'UTF-8') ?>" required>
-        <?php if (!empty($errores['stock'])): ?><div class="error"><?= htmlspecialchars($errores['stock'], ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-semibold">Descripción</label>
+                        <textarea id="description" name="description" class="form-control" rows="3"><?= htmlspecialchars($old['description'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
+                    </div>
 
-        <label for="image">Imagen</label>
-        <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.webp,.gif">
-        <?php if (!empty($errores['image'])): ?><div class="error"><?= htmlspecialchars($errores['image'], ENT_QUOTES, 'UTF-8') ?></div><?php endif; ?>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="price" class="form-label fw-semibold">Precio (&euro;) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" min="0" id="price" name="price"
+                                   class="form-control <?= !empty($errores['price']) ? 'is-invalid' : '' ?>"
+                                   value="<?= htmlspecialchars($old['price'] ?? '', ENT_QUOTES, 'UTF-8') ?>" required>
+                            <?php if (!empty($errores['price'])): ?>
+                                <div class="invalid-feedback"><?= htmlspecialchars($errores['price'], ENT_QUOTES, 'UTF-8') ?></div>
+                            <?php endif; ?>
+                        </div>
 
-        <br>
-        <button type="submit" class="btn btn-primary">Guardar Producto</button>
-        <a href="<?= BASE_URL ?>productos/gestion" class="btn btn-secondary">Cancelar</a>
-    </form>
-</body>
-</html>
+                        <div class="col-md-4 mb-3">
+                            <label for="stock" class="form-label fw-semibold">Stock <span class="text-danger">*</span></label>
+                            <input type="number" min="0" id="stock" name="stock"
+                                   class="form-control <?= !empty($errores['stock']) ? 'is-invalid' : '' ?>"
+                                   value="<?= htmlspecialchars($old['stock'] ?? '0', ENT_QUOTES, 'UTF-8') ?>" required>
+                            <?php if (!empty($errores['stock'])): ?>
+                                <div class="invalid-feedback"><?= htmlspecialchars($errores['stock'], ENT_QUOTES, 'UTF-8') ?></div>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label for="image" class="form-label fw-semibold">Imagen</label>
+                            <input type="file" id="image" name="image"
+                                   class="form-control <?= !empty($errores['image']) ? 'is-invalid' : '' ?>"
+                                   accept=".jpg,.jpeg,.png,.webp,.gif">
+                            <?php if (!empty($errores['image'])): ?>
+                                <div class="invalid-feedback"><?= htmlspecialchars($errores['image'], ENT_QUOTES, 'UTF-8') ?></div>
+                            <?php endif; ?>
+                            <div class="form-text">Formatos aceptados: jpg, jpeg, png, webp, gif</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-2">
+                        <button type="submit" class="btn btn-dark">
+                            <i class="bi bi-cloud-upload me-1"></i>Guardar producto
+                        </button>
+                        <a href="<?= BASE_URL ?>productos/gestion" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php require __DIR__ . '/../layout/footer.php'; ?>
