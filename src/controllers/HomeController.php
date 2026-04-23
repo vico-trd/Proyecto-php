@@ -2,20 +2,28 @@
 
 namespace App\Controllers;
 
+use App\Services\CategoriaService;
 use App\Services\ProductoService;
 
 class HomeController extends BaseController
 {
+    private CategoriaService $categoriaService;
     private ProductoService $productoService;
 
     public function __construct()
     {
-        $this->productoService = new ProductoService();
+        $this->categoriaService = new CategoriaService();
+        $this->productoService  = new ProductoService();
     }
 
     public function index(): void
     {
-        $productos = $this->productoService->listarRecientes(4);
-        $this->render('home', compact('productos'));
+        $categorias = $this->categoriaService->listar();
+        $productos  = array_slice($this->productoService->listar(), 0, 8);
+
+        $this->render('home', [
+            'categorias' => $categorias,
+            'productos'  => $productos,
+        ]);
     }
 }

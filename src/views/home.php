@@ -153,22 +153,32 @@
     <div class="hero-banner">
         <h1>Colección Primavera 2026</h1>
         <p>Estilo, comodidad y tendencia en cada prenda.</p>
-        <a href="categoria" class="btn-comprar">Ver Catálogo</a>
+        <a href="<?= BASE_URL ?>categorias" class="btn-comprar">Ver Catálogo</a>
     </div>
 
     <h2 class="seccion-titulo">Compra por Categoría</h2>
+    <?php if (!empty($categorias)): ?>
     <div class="grid-categorias">
-        <a href="#" class="categoria-card" style="background-image: url('https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=600&q=80');">
-            Hombre
-        </a>
-        <a href="#" class="categoria-card" style="background-image: url('https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80');">
-            Mujer
-        </a>
-        <a href="#" class="categoria-card" style="background-image: url('https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?auto=format&fit=crop&w=600&q=80');">
-            Zapatillas
-        </a>
+        <?php
+        $bgImages = [
+            'https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=600&q=80',
+        ];
+        ?>
+        <?php foreach ($categorias as $i => $cat): ?>
+            <a href="<?= BASE_URL ?>categoria/<?= (int)$cat->id ?>/productos" class="categoria-card"
+               style="background-image: url('<?= $bgImages[$i % count($bgImages)] ?>')">
+                <?= htmlspecialchars($cat->name, ENT_QUOTES, 'UTF-8') ?>
+            </a>
+        <?php endforeach; ?>
     </div>
-
+    <?php else: ?>
+    <p class="text-center text-muted mb-5">Próximamente nuevas categorías.</p>
+    <?php endif; ?>
     <h2 class="seccion-titulo">Últimas Novedades</h2>
     <?php if (!empty($productos)): ?>
     <div class="grid-productos">
