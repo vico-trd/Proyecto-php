@@ -45,8 +45,8 @@
                         <td>
                             <?php if (!empty($producto->image)): ?>
                                 <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>"
-                                     alt="Imagen"
-                                     class="rounded" style="width:52px;height:52px;object-fit:cover;">
+                                    alt="Imagen"
+                                    class="rounded" style="width:52px;height:52px;object-fit:cover;">
                             <?php else: ?>
                                 <div class="rounded bg-light d-flex align-items-center justify-content-center" style="width:52px;height:52px;">
                                     <i class="bi bi-image text-muted"></i>
@@ -70,7 +70,7 @@
                                 <i class="bi bi-pencil me-1"></i>Editar
                             </a>
                             <form method="POST" action="<?= BASE_URL ?>productos/eliminar/<?= (int)$producto->id ?>" class="d-inline"
-                                  onsubmit="return confirm('¿Eliminar el producto «<?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?>»?');">
+                                onsubmit="return confirm('¿Eliminar el producto «<?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?>»?');">
                                 <button type="submit" class="btn btn-sm btn-danger">
                                     <i class="bi bi-trash me-1"></i>Eliminar
                                 </button>

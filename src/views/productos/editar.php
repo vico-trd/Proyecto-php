@@ -26,8 +26,8 @@
                         <div class="col-md-8 mb-3">
                             <label for="name" class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
                             <input type="text" id="name" name="name"
-                                   class="form-control <?= !empty($errores['name']) ? 'is-invalid' : '' ?>"
-                                   value="<?= htmlspecialchars($old['name'] ?? $producto->name, ENT_QUOTES, 'UTF-8') ?>" required>
+                                class="form-control <?= !empty($errores['name']) ? 'is-invalid' : '' ?>"
+                                value="<?= htmlspecialchars($old['name'] ?? $producto->name, ENT_QUOTES, 'UTF-8') ?>" required>
                             <?php if (!empty($errores['name'])): ?>
                                 <div class="invalid-feedback"><?= htmlspecialchars($errores['name'], ENT_QUOTES, 'UTF-8') ?></div>
                             <?php endif; ?>
