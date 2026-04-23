@@ -13,6 +13,9 @@ $router->post('login', [AuthController::class, 'login']);
 
 $router->get('logout', [AuthController::class, 'logout']);
 
+$router->get('auth/google', [AuthController::class, 'googleRedirect']);
+$router->get('auth/google/callback', [AuthController::class, 'googleCallback']);
+
 $router->get('admin/users/create', [AuthController::class, 'showCreateUser']);
 $router->post('admin/users/create', [AuthController::class, 'createUser']);
 

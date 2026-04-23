@@ -99,5 +99,25 @@ class UserRepository implements RepositoryInterface
         $stmt = $this->db->prepare('DELETE FROM users WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }
+
+    public function findOrCreateGoogleUser(string $email, string $name): User
+    {
+        $existing = $this->findByEmail($email);
+        if ($existing) {
+            return $existing;
+        }
+
+        $stmt = $this->db->prepare(
+            'INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)'
+        );
+        $stmt->execute([
+            'name'     => $name,
+            'email'    => $email,
+            'password' => password_hash(bin2hex(random_bytes(32)), PASSWORD_BCRYPT),
+            'role'     => 'user',
+        ]);
+
+        return $this->findByEmail($email);
+    }
 }
 ?>
