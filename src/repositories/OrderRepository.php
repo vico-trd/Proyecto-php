@@ -141,5 +141,36 @@ public function createPendingOrder(?int $userId, ?string $sessionId = null): int
         $stmt = $this->db->prepare('UPDATE orders SET total = :total WHERE id = :id');
         return $stmt->execute(['total' => $total, 'id' => $orderId]);
     }
+
+
+
+//FUNCION PARA LOS PEDIDOS, PUNTO 15
+    public function finalizarPedido(int $orderId, array $items): bool
+{
+    try {
+        $this->db->beginTransaction();
+
+        // 1. Cambiar estado del pedido
+        $stmt = $this->db->prepare("UPDATE orders SET status = 'confirmado' WHERE id = :id");
+        $stmt->execute(['id' => $orderId]);
+
+        // 2. Decrementar stock de cada producto
+        $stmtStock = $this->db->prepare("UPDATE products SET stock = stock - :cantidad WHERE id = :product_id");
+        
+        foreach ($items as $productId => $cantidad) {
+            $stmtStock->execute([
+                'cantidad' => $cantidad,
+                'product_id' => $productId
+            ]);
+        }
+
+        $this->db->commit();
+        return true;
+    } catch (\Exception $e) {
+        $this->db->rollBack();
+        // Opcional: loguear el error $e->getMessage();
+        return false;
+    }
+}
     
 }
