@@ -12,10 +12,13 @@ class CategoriaController
 
     public function __construct()
     {
-    $this->service = new CategoriaService();
+        $this->service = new CategoriaService();
+    }
 
-    $middleware = new AdminMiddleware();
-    $middleware->handle(fn() => true);
+    private function requireAdmin(): void
+    {
+        $middleware = new AdminMiddleware();
+        $middleware->handle(fn() => true);
     }
 
     /**
@@ -23,6 +26,7 @@ class CategoriaController
      */
     public function index(): void
     {
+        $this->requireAdmin();
         $categorias = $this->service->listar();
         require __DIR__ . '/../views/categoria/index.php';
     }
@@ -32,6 +36,7 @@ class CategoriaController
      */
     public function crear(): void
     {
+        $this->requireAdmin();
         $errores = $_SESSION['errores'] ?? [];
         $old = $_SESSION['old'] ?? [];
         unset($_SESSION['errores'], $_SESSION['old']);
@@ -44,6 +49,7 @@ class CategoriaController
      */
     public function guardar(): void
     {
+        $this->requireAdmin();
         $request = new CategoriaRequest();
 
         if (!$request->validate($_POST)) {
@@ -72,6 +78,7 @@ class CategoriaController
      */
     public function editar(int $id): void
     {
+        $this->requireAdmin();
         $categoria = $this->service->obtenerPorId((int)$id);
 
         if (!$categoria) {
@@ -92,6 +99,7 @@ class CategoriaController
      */
     public function actualizar(int $id): void
     {
+        $this->requireAdmin();
         $id = (int)$id;
         $request = new CategoriaRequest();
 
@@ -121,6 +129,7 @@ class CategoriaController
      */
     public function eliminar(int $id): void
     {
+        $this->requireAdmin();
         $id = (int)$id;
         $resultado = $this->service->eliminar($id);
 

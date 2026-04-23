@@ -11,3 +11,6 @@ Proyecto final de PHP, realizado por Alejandro Felipe, Alejandro Vico y Julio de
 3. **Registro:** Antes de comprar, el usuario crea su cuenta.
 4. **Carrito:** Se muestran los productos seleccionados y el total.
 5. **Confirmación:** Mensaje de éxito tras "simular" el pedido.
+
+
+## Hacer composer install

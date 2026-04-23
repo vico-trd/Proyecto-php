@@ -10,27 +10,17 @@ class AdminMiddleware implements MiddlewareInterface
             session_start();
         }
 
-        $identity = $_SESSION['identity'] ?? null;
-        $role = null;
-
-        if (is_object($identity)) {
-            $role = $identity->role ?? $identity->rol ?? null;
-        } elseif (is_array($identity)) {
-            $role = $identity['role'] ?? $identity['rol'] ?? null;
-        }
-
-        if ($role !== 'admin') {
+        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
             if (defined('BASE_URL')) {
                 header('Location: ' . BASE_URL . '404');
                 exit();
             }
 
-            header('HTTP/1.1 404 Not Found');
+            http_response_code(404);
             echo 'Recurso no encontrado.';
             exit();
         }
 
-        // Ejecuta la siguiente capa (controlador)
         return $next();
     }
 }
