@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Services\ProductoService;
 use App\Repositories\OrderRepository;
 use App\Repositories\OrderItemRepository;
-use App\Controllers\CarritoController;
+use App\Controllers\BaseController;
 
 class CarritoController extends BaseController
 {
