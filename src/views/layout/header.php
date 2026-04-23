@@ -29,7 +29,16 @@
         
         <div class="navbar-nav ms-auto align-items-center">
             <a class="nav-link me-3" href="<?= BASE_URL ?>carrito">
-                🛒 <span class="cart-badge">1</span>
+                🛒
+                <?php
+                $_cartCount = 0;
+                if (isset($_SESSION['carrito']) && is_array($_SESSION['carrito'])) {
+                    $_cartCount = array_sum($_SESSION['carrito']);
+                }
+                ?>
+                <?php if ($_cartCount > 0): ?>
+                    <span class="cart-badge"><?= (int)$_cartCount ?></span>
+                <?php endif; ?>
             </a>
 
             <?php if (isset($_SESSION['user'])): ?>

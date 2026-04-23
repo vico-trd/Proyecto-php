@@ -23,6 +23,28 @@ class ProductoService
         return $this->productRepository->findAll();
     }
 
+    public function obtenerPorId(int $id): ?\App\Models\Product
+    {
+        return $this->productRepository->findById($id);
+    }
+
+    /**
+     * @param int[] $ids
+     * @return \App\Models\Product[]
+     */
+    public function obtenerPorIds(array $ids): array
+    {
+        return $this->productRepository->findByIds($ids);
+    }
+
+    /**
+     * @return \App\Models\Product[]
+     */
+    public function listarRecientes(int $limit = 4): array
+    {
+        return $this->productRepository->findRecent($limit);
+    }
+
     public function listarPorCategoriaPaginado(int $categoryId, int $currentPage, int $itemsPerPage = 6): array
     {
         $totalItems = $this->productRepository->countByCategory($categoryId);

@@ -18,6 +18,11 @@ $router->post('admin/users/create', [AuthController::class, 'createUser']);
 
 $router->get('inicio', [\App\Controllers\HomeController::class, 'index']);
 $router->get('carrito', [\App\Controllers\CarritoController::class, 'index']);
+$router->post('carrito/agregar', [\App\Controllers\CarritoController::class, 'agregar']);
+$router->post('carrito/incrementar', [\App\Controllers\CarritoController::class, 'incrementar']);
+$router->post('carrito/decrementar', [\App\Controllers\CarritoController::class, 'decrementar']);
+$router->post('carrito/eliminar', [\App\Controllers\CarritoController::class, 'eliminar']);
+$router->post('carrito/vaciar', [\App\Controllers\CarritoController::class, 'vaciar']);
 
 
 // Rutas para el maquetado que estamos creando

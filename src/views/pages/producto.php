@@ -13,9 +13,14 @@
                 Diseñadas para ofrecer la máxima comodidad y estilo. Perfectas tanto para el deporte como para tu día a día. Edición limitada de la nueva colección Primavera.
             </p>
             
-            <a href="/Proyecto-php/carrito" class="btn-carrito" style="text-decoration: none; display: inline-block; text-align: center;">
-    Añadir al Carrito
-</a>
+            <form method="POST" action="<?= BASE_URL ?>carrito/agregar" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <input type="hidden" name="producto_id" value="1">
+                <input type="number" name="cantidad" value="1" min="1" max="99"
+                    style="width:70px; padding:8px; border:1px solid #ddd; border-radius:5px; font-size:1rem;">
+                <button type="submit" class="btn-carrito" style="flex:1; border:none; cursor:pointer; padding:12px 20px;">
+                    Añadir al Carrito
+                </button>
+            </form>
         </div>
     </div>
 </main>

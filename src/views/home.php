@@ -170,33 +170,30 @@
     </div>
 
     <h2 class="seccion-titulo">Últimas Novedades</h2>
+    <?php if (!empty($productos)): ?>
     <div class="grid-productos">
+        <?php foreach ($productos as $producto): ?>
         <div class="producto-card">
-            <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=400&q=80" alt="Camiseta Básica">
-            <h3>Camiseta Essential Blanca</h3>
-            <p class="precio">19.99 €</p>
-            <a href="#" class="btn-carrito">Añadir al carrito</a>
+            <?php if (!empty($producto->image)): ?>
+                <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?>">
+            <?php else: ?>
+                <img src="https://via.placeholder.com/400x280" alt="<?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?>">
+            <?php endif; ?>
+            <h3><?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?></h3>
+            <p class="precio"><?= number_format($producto->price, 2) ?> €</p>
+            <?php if ($producto->stock > 0): ?>
+                <form method="POST" action="<?= BASE_URL ?>carrito/agregar">
+                    <input type="hidden" name="producto_id" value="<?= (int)$producto->id ?>">
+                    <input type="hidden" name="cantidad" value="1">
+                    <button type="submit" class="btn-carrito">Añadir al carrito</button>
+                </form>
+            <?php else: ?>
+                <span class="btn-carrito" style="background:#e0e0e0;color:#888;cursor:not-allowed;">Sin stock</span>
+            <?php endif; ?>
         </div>
-
-        <div class="producto-card">
-            <img src="https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=400&q=80" alt="Pantalón Vaquero">
-            <h3>Jeans Slim Fit</h3>
-            <p class="precio">39.99 €</p>
-            <a href="#" class="btn-carrito">Añadir al carrito</a>
-        </div>
-
-        <div class="producto-card">
-            <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=400&q=80" alt="Sudadera">
-            <h3>Sudadera Urban Grey</h3>
-            <p class="precio">29.99 €</p>
-            <a href="#" class="btn-carrito">Añadir al carrito</a>
-        </div>
-
-        <div class="producto-card">
-            <img src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=400&q=80" alt="Vestido">
-            <h3>Vestido Floral Verano</h3>
-            <p class="precio">34.99 €</p>
-            <a href="#" class="btn-carrito">Añadir al carrito</a>
-        </div>
+        <?php endforeach; ?>
     </div>
+    <?php else: ?>
+    <p style="text-align:center;color:#888;">No hay productos disponibles aún.</p>
+    <?php endif; ?>
 </div>
