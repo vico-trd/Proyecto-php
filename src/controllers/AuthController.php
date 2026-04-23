@@ -152,4 +152,83 @@ class AuthController extends BaseController
     {
         return isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin';
     }
+
+    private function buildGoogleClient(): \Google\Client
+    {
+        $client = new \Google\Client();
+        $client->setClientId($_ENV['GOOGLE_CLIENT_ID']);
+        $client->setClientSecret($_ENV['GOOGLE_CLIENT_SECRET']);
+        $client->setRedirectUri($_ENV['GOOGLE_REDIRECT_URI']);
+        $client->addScope(\Google\Service\Oauth2::USERINFO_EMAIL);
+        $client->addScope(\Google\Service\Oauth2::USERINFO_PROFILE);
+        return $client;
+    }
+
+    public function googleRedirect(): void
+    {
+        $client = $this->buildGoogleClient();
+        $state = bin2hex(random_bytes(16));
+        $_SESSION['oauth_state'] = $state;
+        $client->setState($state);
+        header('Location: ' . $client->createAuthUrl());
+        exit();
+    }
+
+    public function googleCallback(): void
+    {
+        $receivedState = $_GET['state'] ?? '';
+        $expectedState = $_SESSION['oauth_state'] ?? '';
+
+        if (empty($receivedState) || !hash_equals($expectedState, $receivedState)) {
+            unset($_SESSION['oauth_state']);
+            $this->render('auth/login', [
+                'errors' => ['email' => 'Estado de seguridad inválido. Inténtalo de nuevo.'],
+            ]);
+            return;
+        }
+        unset($_SESSION['oauth_state']);
+
+        $code = $_GET['code'] ?? '';
+        if (empty($code)) {
+            $this->render('auth/login', [
+                'errors' => ['email' => 'Google no envió el código de autorización.'],
+            ]);
+            return;
+        }
+
+        $client = $this->buildGoogleClient();
+        $token  = $client->fetchAccessTokenWithAuthCode($code);
+
+        if (isset($token['error'])) {
+            $this->render('auth/login', [
+                'errors' => ['email' => 'Error al autenticar con Google: ' . htmlspecialchars($token['error'])],
+            ]);
+            return;
+        }
+
+        $client->setAccessToken($token);
+        $oauth2Service = new \Google\Service\Oauth2($client);
+        $googleUser    = $oauth2Service->userinfo->get();
+
+        $email = $googleUser->getEmail();
+        $name  = $googleUser->getName() ?? $email;
+
+        if (!$email) {
+            $this->render('auth/login', [
+                'errors' => ['email' => 'No se pudo obtener el email desde Google.'],
+            ]);
+            return;
+        }
+
+        $user = $this->userRepository->findOrCreateGoogleUser($email, $name);
+
+        $_SESSION['user'] = [
+            'id'    => $user->id,
+            'name'  => $user->name,
+            'email' => $user->email,
+            'role'  => $user->role,
+        ];
+
+        $this->redirect('');
+    }
 }
