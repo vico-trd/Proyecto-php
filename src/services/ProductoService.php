@@ -181,11 +181,15 @@ class ProductoService
         return $this->productRepository->save($updated);
     }
 
-    public function eliminar(int $id): bool
+    public function eliminar(int $id): bool|string
     {
         $product = $this->productRepository->findById($id);
         if (!$product) {
-            return false;
+            return 'El producto no existe.';
+        }
+
+        if ($this->productRepository->countOrderItemsByProduct($id) > 0) {
+            return 'No se puede eliminar el producto porque está asociado a uno o más pedidos.';
         }
 
         if (!empty($product->image)) {

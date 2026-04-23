@@ -143,9 +143,14 @@ class ProductoController
     {
         $this->authorizeAdmin();
 
-        $this->productoService->eliminar($id);
+        $result = $this->productoService->eliminar($id);
 
-        $_SESSION['product_save'] = 'complete';
+        if ($result === true) {
+            $_SESSION['product_delete'] = 'complete';
+        } else {
+            $_SESSION['product_error'] = is_string($result) ? $result : 'No se pudo eliminar el producto.';
+        }
+
         header('Location: ' . BASE_URL . 'productos/gestion');
         exit();
     }
