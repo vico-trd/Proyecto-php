@@ -121,6 +121,13 @@ class ProductRepository implements RepositoryInterface
         }
     }
 
+    public function countOrderItemsByProduct(int $productId): int
+    {
+        $stmt = $this->db->prepare('SELECT COUNT(*) AS total FROM order_items WHERE product_id = :product_id');
+        $stmt->execute(['product_id' => $productId]);
+        return (int)($stmt->fetch()['total'] ?? 0);
+    }
+
     public function delete(int $id): bool
     {
         $stmt = $this->db->prepare('DELETE FROM products WHERE id = :id');

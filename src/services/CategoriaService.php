@@ -66,8 +66,13 @@ class CategoriaService
         return $this->repository->save($category);
     }
 
-    public function eliminar(int $id): bool
+    public function eliminar(int $id): bool|string
     {
+        $productCount = $this->repository->countProductsByCategory($id);
+        if ($productCount > 0) {
+            return 'No se puede eliminar la categoría porque tiene ' . $productCount . ' producto(s) asociado(s). Elimina o reasigna los productos primero.';
+        }
+
         return $this->repository->delete($id);
     }
 }
