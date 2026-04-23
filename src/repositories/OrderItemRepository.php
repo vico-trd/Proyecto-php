@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use PDO;
@@ -106,7 +107,19 @@ class OrderItemRepository implements RepositoryInterface
             'price'      => $price,
         ]);
     }
-}
 
+    /**
+     * Busca todos los items de un pedido específico.
+     */
+    public function findByOrderId(int $orderId): array
+    {
+        $sql = "SELECT product_id, quantity FROM order_items WHERE order_id = :order_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['order_id' => $orderId]);
+        
+        // Retorna un array de objetos estándar con product_id y quantity
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
+    }
+}
 
 

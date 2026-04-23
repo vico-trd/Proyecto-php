@@ -12,14 +12,16 @@ class Database
 
     private function __construct()
     {
+        // Si $_ENV no está cargado, estos valores por defecto funcionarán en XAMPP
         $host = $_ENV['DB_HOST'] ?? '127.0.0.1';
         $port = $_ENV['DB_PORT'] ?? '3306';
         $db   = $_ENV['DB_NAME'] ?? 'ecommerce_db';
         $user = $_ENV['DB_USER'] ?? 'root';
-        $pass = $_ENV['DB_PASS'] ?? '';
+        $pass = $_ENV['DB_PASS'] ?? ''; // XAMPP por defecto no tiene contraseña
         $charset = 'utf8mb4';
 
         $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=$charset";
+        
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -27,10 +29,11 @@ class Database
         ];
 
         try {
+            // Intentamos la conexión
             $this->connection = new PDO($dsn, $user, $pass, $options);
         } catch (PDOException $e) {
-            // En un entorno de producción, registrar el error en un archivo en lugar de mostrarlo
-            throw new PDOException($e->getMessage(), (int)$e->getCode());
+            // Si falla, lanzamos un mensaje más descriptivo para debuggear
+            throw new PDOException("Error de Conexión: " . $e->getMessage(), (int)$e->getCode());
         }
     }
 
@@ -48,6 +51,5 @@ class Database
         return $this->connection;
     }
 
-    // Prevenir la clonación de la instancia
     private function __clone() {}
 }
