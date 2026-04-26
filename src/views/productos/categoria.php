@@ -34,18 +34,24 @@ $nextUrl  = $paginator->getNextUrl();
         <?php foreach ($products as $product): ?>
             <div class="col">
                 <div class="card h-100 shadow-sm border-0">
-                    <?php if (!empty($product->image)): ?>
-                        <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($product->image, ENT_QUOTES, 'UTF-8') ?>"
-                             alt="<?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?>"
-                             class="card-img-top" style="height:220px;object-fit:cover;">
-                    <?php else: ?>
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:220px;">
-                            <i class="bi bi-image fs-1 text-muted"></i>
-                        </div>
-                    <?php endif; ?>
+                    <a href="<?= BASE_URL ?>producto/<?= $product->id ?>">
+                        <?php if (!empty($product->image)): ?>
+                            <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($product->image, ENT_QUOTES, 'UTF-8') ?>"
+                                 alt="<?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?>"
+                                 class="card-img-top" style="height:220px;object-fit:cover;">
+                        <?php else: ?>
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:220px;">
+                                <i class="bi bi-image fs-1 text-muted"></i>
+                            </div>
+                        <?php endif; ?>
+                    </a>
 
                     <div class="card-body d-flex flex-column">
-                        <h6 class="card-title fw-semibold mb-1"><?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?></h6>
+                        <h6 class="card-title fw-semibold mb-1">
+                            <a href="<?= BASE_URL ?>producto/<?= $product->id ?>" class="text-decoration-none text-dark">
+                                <?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?>
+                            </a>
+                        </h6>
                         <p class="card-text text-muted small flex-grow-1">
                             <?= htmlspecialchars(mb_strimwidth($product->description, 0, 80, '…'), ENT_QUOTES, 'UTF-8') ?>
                         </p>

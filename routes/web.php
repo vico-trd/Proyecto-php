@@ -33,3 +33,4 @@ $router->get('producto', [\App\Controllers\ProductoController::class, 'show']);
 $router->get('checkout', [\App\Controllers\CheckoutController::class, 'index']);
 $router->post('checkout/procesar', [\App\Controllers\CheckoutController::class, 'procesar']); // <-- AÑADIDA
 $router->get('confirmacion', [\App\Controllers\CheckoutController::class, 'confirmacion']);
+$router->get('producto/{id}', [\App\Controllers\ProductoController::class, 'show']);
