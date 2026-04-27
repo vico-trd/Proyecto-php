@@ -18,22 +18,13 @@
         <div class="col-lg-7">
             <div class="card shadow-sm">
                 <div class="card-body p-4">
-                    <h5 class="card-title mb-4">Datos de envío</h5>
+                    <h5 class="card-title mb-1">Datos de envío</h5>
+                    <p class="text-muted small mb-4">
+                        Comprando como
+                        <strong><?= htmlspecialchars($_SESSION['user']['name'] ?? '', ENT_QUOTES, 'UTF-8') ?></strong>
+                        (<?= htmlspecialchars($_SESSION['user']['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>)
+                    </p>
                     <form action="<?= BASE_URL ?>checkout/procesar" method="POST">
-
-                        <div class="mb-3">
-                            <label class="form-label">Nombre completo</label>
-                            <input type="text" class="form-control"
-                                   value="<?= htmlspecialchars($_SESSION['user']['name'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                   readonly>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Correo electrónico</label>
-                            <input type="email" class="form-control"
-                                   value="<?= htmlspecialchars($_SESSION['user']['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                   readonly>
-                        </div>
 
                         <div class="mb-4">
                             <label for="direccion" class="form-label">
@@ -44,7 +35,7 @@
                         </div>
 
                         <button type="submit" class="btn btn-danger w-100 py-2 fw-bold">
-                            ✅ Confirmar y finalizar compra
+                            Confirmar y finalizar compra
                         </button>
                         <a href="<?= BASE_URL ?>carrito" class="btn btn-link w-100 text-center mt-2">
                             ← Volver al carrito
