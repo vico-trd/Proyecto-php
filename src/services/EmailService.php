@@ -72,6 +72,52 @@ class EmailService
         $this->mailer->send();
     }
 
+    /**
+     * Envía un correo de bienvenida al usuario recién registrado.
+     *
+     * @throws Exception Si el envío falla.
+     */
+    public function enviarBienvenida(string $destinatarioEmail, string $destinatarioNombre): void
+    {
+        $this->mailer->clearAddresses();
+        $this->mailer->addAddress($destinatarioEmail, $destinatarioNombre);
+
+        $nombreEsc = htmlspecialchars($destinatarioNombre, ENT_QUOTES, 'UTF-8');
+
+        $this->mailer->isHTML(true);
+        $this->mailer->Subject = '¡Bienvenido/a a Clothing Store, ' . $destinatarioNombre . '!';
+        $this->mailer->Body    = <<<HTML
+        <!DOCTYPE html>
+        <html lang="es">
+        <head><meta charset="UTF-8">
+        <style>
+            body       { font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:0; }
+            .container { max-width:600px; margin:30px auto; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+            .header    { background:#1a1a1a; color:#fff; padding:24px 32px; }
+            .header h1 { margin:0; font-size:22px; letter-spacing:1px; }
+            .body      { padding:32px; color:#333; line-height:1.7; }
+            .btn       { display:inline-block; margin-top:20px; padding:12px 28px; background:#ff4757; color:#fff; text-decoration:none; border-radius:4px; font-weight:bold; }
+            .footer    { background:#f4f4f4; text-align:center; padding:16px; font-size:12px; color:#999; }
+        </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header"><h1>🛍 Clothing Store</h1></div>
+                <div class="body">
+                    <p>Hola, <strong>{$nombreEsc}</strong>.</p>
+                    <p>Tu cuenta ha sido creada correctamente. Ya puedes explorar nuestro catálogo y realizar tus primeras compras.</p>
+                    <a href="http://localhost/Proyecto-php/public/" class="btn">Ir a la tienda</a>
+                </div>
+                <div class="footer">&copy; Clothing Store · Este correo se generó automáticamente.</div>
+            </div>
+        </body>
+        </html>
+        HTML;
+        $this->mailer->AltBody = "Hola, {$destinatarioNombre}.\n\nTu cuenta en Clothing Store ha sido creada correctamente.\nVisítanos en: http://localhost/Proyecto-php/public/";
+
+        $this->mailer->send();
+    }
+
     // ─── Cuerpo HTML ───────────────────────────────────────────────────────────
 
     private function construirCuerpoHtml(

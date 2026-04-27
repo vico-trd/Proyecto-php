@@ -7,6 +7,8 @@ use App\Request\LoginRequest;
 use App\Repositories\UserRepository;
 use App\Models\User;
 use App\Controllers\CarritoController;
+use App\Services\EmailService;
+use PHPMailer\PHPMailer\Exception;
 
 class AuthController extends BaseController
 {
@@ -52,6 +54,14 @@ class AuthController extends BaseController
         );
 
         $this->userRepository->save($user);
+
+        try {
+            $emailService = new EmailService();
+            $emailService->enviarBienvenida($user->email, $user->name);
+        } catch (Exception $e) {
+            error_log('[EmailService] No se pudo enviar el correo de bienvenida: ' . $e->getMessage());
+        }
+
         $this->redirect('login');
     }
 
