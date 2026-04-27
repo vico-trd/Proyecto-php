@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Controllers\CarritoController;
 use App\Repositories\OrderRepository;
 use App\Repositories\OrderItemRepository;
+use App\Services\EmailService;
+use PHPMailer\PHPMailer\Exception;
 
 class AuthController extends BaseController
 {
