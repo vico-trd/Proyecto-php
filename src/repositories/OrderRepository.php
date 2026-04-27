@@ -28,7 +28,8 @@ class OrderRepository implements RepositoryInterface
                 id: (int)$data['id'],
                 user_id: (int)$data['user_id'],
                 total: (float)$data['total'],
-                status: $data['status']
+                status: $data['status'],
+                created_at: $data['created_at'] ?? null
             );
         }
 
@@ -44,7 +45,8 @@ class OrderRepository implements RepositoryInterface
                 id: (int)$data['id'],
                 user_id: (int)$data['user_id'],
                 total: (float)$data['total'],
-                status: $data['status']
+                status: $data['status'],
+                created_at: $data['created_at'] ?? null
             );
         }
 
@@ -97,7 +99,8 @@ public function findPendingByUserId(int $userId): ?Order
             id: (int)$data['id'],
             user_id: $data['user_id'] ? (int)$data['user_id'] : null,
             total: (float)$data['total'],
-            status: $data['status']
+            status: $data['status'],
+            created_at: $data['created_at'] ?? null
         );
     }
     return null;
@@ -117,7 +120,8 @@ public function findPendingBySessionId(string $sessionId): ?Order
             id: (int)$data['id'],
             user_id: $data['user_id'] ? (int)$data['user_id'] : null,
             total: (float)$data['total'],
-            status: $data['status']
+            status: $data['status'],
+            created_at: $data['created_at'] ?? null
         );
     }
     return null;
@@ -144,7 +148,51 @@ public function createPendingOrder(?int $userId, ?string $sessionId = null): int
 
 
 
-//FUNCION PARA LOS PEDIDOS, PUNTO 15
+    /**
+     * Devuelve todos los pedidos confirmados de un usuario, del más reciente al más antiguo.
+     */
+    public function findAllByUserId(int $userId): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT * FROM orders WHERE user_id = :user_id AND status != 'pending' ORDER BY created_at DESC"
+        );
+        $stmt->execute(['user_id' => $userId]);
+        $orders = [];
+        while ($data = $stmt->fetch()) {
+            $orders[] = new Order(
+                id: (int)$data['id'],
+                user_id: (int)$data['user_id'],
+                total: (float)$data['total'],
+                status: $data['status'],
+                created_at: $data['created_at'] ?? null
+            );
+        }
+        return $orders;
+    }
+
+    /**
+     * Devuelve un pedido por ID solo si pertenece al usuario indicado.
+     */
+    public function findByIdAndUserId(int $orderId, int $userId): ?Order
+    {
+        $stmt = $this->db->prepare(
+            "SELECT * FROM orders WHERE id = :id AND user_id = :user_id AND status != 'pending'"
+        );
+        $stmt->execute(['id' => $orderId, 'user_id' => $userId]);
+        $data = $stmt->fetch();
+        if ($data) {
+            return new Order(
+                id: (int)$data['id'],
+                user_id: (int)$data['user_id'],
+                total: (float)$data['total'],
+                status: $data['status'],
+                created_at: $data['created_at'] ?? null
+            );
+        }
+        return null;
+    }
+
+    //FUNCION PARA LOS PEDIDOS, PUNTO 15
     public function finalizarPedido(int $orderId, array $items): bool
 {
     try {

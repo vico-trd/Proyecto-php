@@ -117,7 +117,21 @@ class OrderItemRepository implements RepositoryInterface
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['order_id' => $orderId]);
         
-        // Retorna un array de objetos estándar con product_id y quantity
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
+    }
+
+    /**
+     * Devuelve los items de un pedido con el nombre del producto incluido.
+     */
+    public function findDetailedByOrderId(int $orderId): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT oi.id, oi.product_id, oi.quantity, oi.price, p.name AS product_name, p.image AS product_image
+             FROM order_items oi
+             INNER JOIN products p ON p.id = oi.product_id
+             WHERE oi.order_id = :order_id"
+        );
+        $stmt->execute(['order_id' => $orderId]);
         return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
 
