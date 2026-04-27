@@ -83,69 +83,94 @@ class OrderRepository implements RepositoryInterface
     /**
      * Busca el pedido 'pending' más reciente de un usuario.
      */
-    public function findPendingByUserId(int $userId): ?Order
-    {
-        $stmt = $this->db->prepare(
-            "SELECT * FROM orders WHERE user_id = :user_id AND status = 'pending' ORDER BY created_at DESC LIMIT 1"
+  // 1. BUSCAR POR USUARIO (Este es el que te daba el error Fatal)
+public function findPendingByUserId(int $userId): ?Order
+{
+    $stmt = $this->db->prepare(
+        "SELECT * FROM orders WHERE user_id = :user_id AND status = 'pending' ORDER BY created_at DESC LIMIT 1"
+    );
+    $stmt->execute(['user_id' => $userId]);
+    $data = $stmt->fetch();
+
+    if ($data) {
+        return new Order(
+            id: (int)$data['id'],
+            user_id: $data['user_id'] ? (int)$data['user_id'] : null,
+            total: (float)$data['total'],
+            status: $data['status']
         );
-        $stmt->execute(['user_id' => $userId]);
-        $data = $stmt->fetch();
-
-        if ($data) {
-            return new Order(
-                id: (int)$data['id'],
-                user_id: (int)$data['user_id'],
-                total: (float)$data['total'],
-                status: $data['status']
-            );
-        }
-
-        return null;
     }
+    return null;
+}
 
-    /**
-     * Crea un pedido pendiente para el usuario y devuelve su ID.
-     */
-    public function createPendingOrder(int $userId): int
-    {
-        $stmt = $this->db->prepare(
-            "INSERT INTO orders (user_id, total, status) VALUES (:user_id, 0, 'pending')"
+// 2. BUSCAR POR SESIÓN (Para invitados)
+public function findPendingBySessionId(string $sessionId): ?Order
+{
+    $stmt = $this->db->prepare(
+        "SELECT * FROM orders WHERE session_id = :session_id AND status = 'pending' LIMIT 1"
+    );
+    $stmt->execute(['session_id' => $sessionId]);
+    $data = $stmt->fetch();
+
+    if ($data) {
+        return new Order(
+            id: (int)$data['id'],
+            user_id: $data['user_id'] ? (int)$data['user_id'] : null,
+            total: (float)$data['total'],
+            status: $data['status']
         );
-        $stmt->execute(['user_id' => $userId]);
-
-        return (int)$this->db->lastInsertId();
     }
+    return null;
+}
 
-    /**
-     * Actualiza el importe total de un pedido.
-     */
+// 3. CREAR PEDIDO (Acepta ambos casos)
+public function createPendingOrder(?int $userId, ?string $sessionId = null): int
+{
+    $sql = "INSERT INTO orders (user_id, session_id, total, status) VALUES (:user_id, :session_id, 0, 'pending')";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([
+        'user_id' => $userId,
+        'session_id' => $sessionId
+    ]);
+    return (int)$this->db->lastInsertId();
+}
+
+
     public function updateTotal(int $orderId, float $total): bool
     {
         $stmt = $this->db->prepare('UPDATE orders SET total = :total WHERE id = :id');
         return $stmt->execute(['total' => $total, 'id' => $orderId]);
     }
 
-    /**
-     * Confirma un pedido cambiando su estado de 'pending' a 'confirmed'.
-     */
-    public function confirmarPedido(int $orderId): bool
-    {
-        $stmt = $this->db->prepare("UPDATE orders SET status = 'confirmed' WHERE id = :id AND status = 'pending'");
-        return $stmt->execute(['id' => $orderId]);
-    }
 
-    /**
-     * Obtiene los items de un pedido con información del producto.
-     */
-    public function findItemsWithProductByOrderId(int $orderId): array
-    {
-        $stmt = $this->db->prepare(
-            "SELECT oi.*, p.name AS product_name
-             FROM order_items oi
-             INNER JOIN products p ON p.id = oi.product_id
-             WHERE oi.order_id = :order_id"
-        );
-        $stmt->execute(['order_id' => $orderId]);
-        return $stmt->fetchAll();
+
+//FUNCION PARA LOS PEDIDOS, PUNTO 15
+    public function finalizarPedido(int $orderId, array $items): bool
+{
+    try {
+        $this->db->beginTransaction();
+
+        // 1. Cambiar estado del pedido
+        $stmt = $this->db->prepare("UPDATE orders SET status = 'confirmado' WHERE id = :id");
+        $stmt->execute(['id' => $orderId]);
+
+        // 2. Decrementar stock de cada producto
+        $stmtStock = $this->db->prepare("UPDATE products SET stock = stock - :cantidad WHERE id = :product_id");
+        
+        foreach ($items as $productId => $cantidad) {
+            $stmtStock->execute([
+                'cantidad' => $cantidad,
+                'product_id' => $productId
+            ]);
+        }
+
+        $this->db->commit();
+        return true;
+    } catch (\Exception $e) {
+        $this->db->rollBack();
+        // Opcional: loguear el error $e->getMessage();
+        return false;
     }
+}
+    
 }

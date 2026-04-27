@@ -7,10 +7,10 @@
         </div>
 
         <div style="flex: 1; min-width: 300px;">
-            <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Zapatillas Ultra Boost 2026</h1>
-            <p style="color: #e74c3c; font-size: 2rem; font-weight: bold; margin-bottom: 20px;">89.99€</p>
+            <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Producto: <?= htmlspecialchars($producto->name) ?></h1>
+            <p style="color: #e74c3c; font-size: 2rem; font-weight: bold; margin-bottom: 20px;"><?= htmlspecialchars($producto->price) ?></p>
             <p style="line-height: 1.6; color: #555; margin-bottom: 30px;">
-                Diseñadas para ofrecer la máxima comodidad y estilo. Perfectas tanto para el deporte como para tu día a día. Edición limitada de la nueva colección Primavera.
+                <?= htmlspecialchars($producto->description) ?>
             </p>
             
             <form method="POST" action="<?= BASE_URL ?>carrito/agregar" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">

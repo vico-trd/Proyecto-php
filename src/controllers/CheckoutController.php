@@ -2,133 +2,103 @@
 
 namespace App\Controllers;
 
-use App\Services\EmailService;
-use App\Services\ProductoService;
 use App\Repositories\OrderRepository;
-use App\Repositories\UserRepository;
-use PHPMailer\PHPMailer\Exception;
+use App\Repositories\OrderItemRepository;
 
 class CheckoutController extends BaseController
 {
     private OrderRepository $orderRepository;
-    private ProductoService $productoService;
-    private UserRepository  $userRepository;
+    private OrderItemRepository $orderItemRepository;
 
     public function __construct()
     {
         $this->orderRepository = new OrderRepository();
-        $this->productoService = new ProductoService();
-        $this->userRepository  = new UserRepository();
+        $this->orderItemRepository = new OrderItemRepository();
     }
 
+    /**
+     * Muestra la pasarela de pago / resumen del pedido
+     */
     public function index(): void
     {
+        // El proceso requiere que el usuario esté logueado
         if (!isset($_SESSION['user'])) {
             $this->redirect('login');
             return;
         }
 
-        $carrito = $_SESSION['carrito'] ?? [];
-
-        if (empty($carrito)) {
-            $this->redirect('carrito');
-            return;
-        }
-
-        $ids      = array_map('intval', array_keys($carrito));
-        $productos = $this->productoService->obtenerPorIds($ids);
-        $total    = 0.0;
-
-        foreach ($productos as $producto) {
-            $total += $producto->price * (int)($carrito[$producto->id] ?? 0);
-        }
-
-        $this->render('pages/checkout', compact('carrito', 'productos', 'total'));
+        $this->render('pages/checkout');
     }
 
-    public function confirmar(): void
+    /**
+     * Procesa la compra: Transacción, Stock y Vaciar Carrito
+     */
+    public function procesar(): void
     {
-        if (!isset($_SESSION['user'])) {
-            $this->redirect('login');
-            return;
-        }
-
-        $carrito = $_SESSION['carrito'] ?? [];
-
-        if (empty($carrito)) {
-            $this->redirect('carrito');
-            return;
-        }
-
-        // Sanitizar y validar dirección de envío
-        $direccion = trim(strip_tags($_POST['direccion'] ?? ''));
-        if ($direccion === '') {
-            $_SESSION['checkout_error'] = 'La dirección de envío es obligatoria.';
-            $this->redirect('checkout');
+        // 1. Verificaciones de seguridad
+        if (!isset($_SESSION['user']) || empty($_SESSION['carrito'])) {
+            $this->redirect('');
             return;
         }
 
         $userId = (int)$_SESSION['user']['id'];
-        $order  = $this->orderRepository->findPendingByUserId($userId);
+        
+        // Buscamos el pedido 'pending' que hemos mantenido sincronizado
+        $pedido = $this->orderRepository->findPendingByUserId($userId);
 
-        if (!$order) {
-            $_SESSION['checkout_error'] = 'No se encontró un pedido activo. Por favor, vuelve al carrito.';
-            $this->redirect('carrito');
-            return;
+        if ($pedido) {
+            // 2. Ejecutamos la transacción (Cambio de estado y decremento de stock)
+            // Le pasamos el carrito actual para saber cuánto descontar de stock
+            $exito = $this->orderRepository->finalizarPedido($pedido->id, $_SESSION['carrito']);
+
+            if ($exito) {
+        // Recuperamos los productos para el email antes de borrar el carrito
+        $carrito = $_SESSION['carrito'];
+        $totalPedido = $pedido->total;
+        $numPedido = $pedido->id;
+        $emailUsuario = $_SESSION['user']['email'];
+        $nombreUsuario = $_SESSION['user']['name'];
+
+        // 1. Construir el cuerpo del mensaje
+        $asunto = "Confirmación de Pedido #$numPedido - Clothing Store";
+        
+        $mensaje = "Hola $nombreUsuario,\n\n";
+        $mensaje .= "¡Gracias por tu compra! Hemos recibido tu pedido correctamente.\n";
+        $mensaje .= "------------------------------------------\n";
+        $mensaje .= "Detalles del Pedido #$numPedido:\n";
+        
+        // Aquí podrías añadir un bucle si quieres listar nombres de productos, 
+        // pero con las cantidades y el total ya cumples el requisito básico.
+        foreach ($carrito as $id => $cantidad) {
+            $mensaje .= "- Producto ID: $id | Cantidad: $cantidad\n";
         }
 
-        // Confirmar el pedido en la base de datos
-        $this->orderRepository->confirmarPedido($order->id);
-        $order->status = 'confirmed';
+        $mensaje .= "------------------------------------------\n";
+        $mensaje .= "TOTAL DE LA COMPRA: " . number_format($totalPedido, 2) . "€\n";
+        $mensaje .= "Lugar de envío: Calle Falsa 123 (Dato de prueba)\n\n";
+        $mensaje .= "Nos pondremos en contacto contigo cuando el paquete salga del almacén.";
 
-        // Hidratar productos para el email
-        $ids       = array_map('intval', array_keys($carrito));
-        $listaProductos = $this->productoService->obtenerPorIds($ids);
-        $mapaProductos  = [];
-        foreach ($listaProductos as $p) {
-            $mapaProductos[$p->id] = $p;
+        // 2. Cabeceras para que no llegue como SPAM (opcional)
+        $headers = "From: no-reply@clothingstore.com\r\n";
+        $headers .= "Reply-To: soporte@clothingstore.com\r\n";
+        $headers .= "X-Mailer: PHP/" . phpversion();
+
+        // 3. Enviar el mail
+        @mail($emailUsuario, $asunto, $mensaje, $headers);
+
+        // 4. AHORA SÍ, vaciamos el carrito y redirigimos
+        unset($_SESSION['carrito']);
+        $this->redirect('confirmacion?id=' . $numPedido);
+    }
         }
-
-        // Enviar correo de confirmación
-        $clienteEmail  = $_SESSION['user']['email'];
-        $clienteNombre = $_SESSION['user']['name'];
-
-        try {
-            $emailService = new EmailService();
-            $emailService->enviarConfirmacionPedido(
-                $order,
-                $carrito,
-                $listaProductos,
-                $clienteEmail,
-                $clienteNombre,
-                $direccion
-            );
-        } catch (Exception $e) {
-            // El pedido ya está confirmado; registramos el fallo sin bloquearlo
-            error_log('[EmailService] No se pudo enviar el correo de confirmación: ' . $e->getMessage());
-        }
-
-        // Limpiar carrito de sesión
-        $_SESSION['carrito'] = [];
-
-        // Pasar datos a la vista de confirmación a través de la sesión
-        $_SESSION['pedido_confirmado'] = [
-            'order_id'  => $order->id,
-            'total'     => $order->total,
-            'direccion' => $direccion,
-            'nombre'    => $clienteNombre,
-            'email'     => $clienteEmail,
-            'fecha'     => date('d/m/Y H:i'),
-        ];
-
-        $this->redirect('confirmacion');
     }
 
+    /**
+     * Muestra la página de éxito final
+     */
     public function confirmacion(): void
     {
-        $pedido = $_SESSION['pedido_confirmado'] ?? null;
-        unset($_SESSION['pedido_confirmado']);
-
-        $this->render('pages/confirmacion', compact('pedido'));
+        $pedidoId = $_GET['id'] ?? null;
+        $this->render('pages/confirmacion', ['pedidoId' => $pedidoId]);
     }
 }

@@ -8,6 +8,7 @@ use App\Requests\ProductoRequest;
 use App\Services\CategoriaService;
 use App\Services\ProductoService;
 
+
 class ProductoController
 {
     private ProductoService $productoService;
@@ -28,12 +29,19 @@ class ProductoController
     /**
      * Esta función es la que busca el Router cuando pones /producto
      */
-    public function show(): void
+   public function show(int $id): void
     {
-        // Esto le dice a PHP: "Ve a la carpeta de vistas y escupe el HTML de producto.php"
+        $producto = $this->productoService->obtenerPorId($id);
+
+        if (!$producto) {
+            die("¡HOLA! He intentado buscar en Base de Datos el producto con ID: " . var_export($id, true) . ". Pero el servicio ha dicho que no existe. ¿Estás seguro de que existe en la tabla 'products'?");
+        }
+
         require __DIR__ . '/../views/pages/producto.php';
     }
 
+
+    
     public function gestion(): void
     {
         $this->authorizeAdmin();
