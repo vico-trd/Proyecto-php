@@ -42,7 +42,8 @@
                     </div>
                 </div>
 
-                <div class="text-center mt-4">
+                <div class="text-center mt-4 d-flex gap-2 justify-content-center">
+                    <a href="<?= BASE_URL ?>mis-pedidos" class="btn btn-outline-secondary px-4">Ver mis pedidos</a>
                     <a href="<?= BASE_URL ?>" class="btn btn-dark px-5">Seguir comprando</a>
                 </div>
             </div>

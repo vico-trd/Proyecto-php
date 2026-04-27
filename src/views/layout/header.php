@@ -46,6 +46,7 @@
                     <a class="nav-link" href="<?= BASE_URL ?>categorias">Gestión Categorías</a>
                     <a class="nav-link" href="<?= BASE_URL ?>productos/gestion">Gestión Productos</a>
                 <?php endif; ?>
+                <a class="nav-link" href="<?= BASE_URL ?>mis-pedidos">Mis pedidos</a>
                 <span class="nav-link text-secondary me-2">Hola, <?= htmlspecialchars($_SESSION['user']['name']) ?></span>
                 <a class="nav-link btn btn-outline-danger btn-sm" href="<?= BASE_URL ?>logout">Salir</a>
             <?php else: ?>
