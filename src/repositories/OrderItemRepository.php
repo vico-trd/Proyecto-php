@@ -120,6 +120,21 @@ class OrderItemRepository implements RepositoryInterface
         // Retorna un array de objetos estándar con product_id y quantity
         return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
+
+    // En OrderItemRepository.php
+public function migrarCarrito(int $userId, string $sessionId): void
+{
+    // 1. Buscamos si el invitado tenía una orden pendiente asociada a su sesión
+    // Nota: Esto depende de que en tu tabla 'orders' guardes el session_id
+    $sql = "UPDATE orders SET user_id = :user_id, session_id = NULL 
+            WHERE session_id = :session_id AND status = 'pending'";
+    
+    $stmt = $this->db->prepare($sql); // Asumo que usas $this->db para la conexión
+    $stmt->execute([
+        'user_id' => $userId,
+        'session_id' => $sessionId
+    ]);
+}
 }
 
 
