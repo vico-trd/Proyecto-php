@@ -123,15 +123,13 @@ public function findPendingBySessionId(string $sessionId): ?Order
     return null;
 }
 
-// 3. CREAR PEDIDO (Acepta ambos casos)
-public function createPendingOrder(?int $userId, ?string $sessionId = null): int
+// 3. CREAR PEDIDO
+public function createPendingOrder(int $userId): int
 {
-    $sql = "INSERT INTO orders (user_id, session_id, total, status) VALUES (:user_id, :session_id, 0, 'pending')";
-    $stmt = $this->db->prepare($sql);
-    $stmt->execute([
-        'user_id' => $userId,
-        'session_id' => $sessionId
-    ]);
+    $stmt = $this->db->prepare(
+        "INSERT INTO orders (user_id, total, status) VALUES (:user_id, 0, 'pending')"
+    );
+    $stmt->execute(['user_id' => $userId]);
     return (int)$this->db->lastInsertId();
 }
 

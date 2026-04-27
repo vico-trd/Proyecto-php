@@ -156,16 +156,17 @@ class CarritoController extends BaseController
    public function sincronizarConDB(): void
 {
     $userId = $_SESSION['user']['id'] ?? null;
-    $sessionId = session_id();
+
+    // Los invitados no tienen usuario; el carrito vive solo en sesión.
+    // Al hacer login, AuthController migra el carrito a la BD.
+    if (!$userId) {
+        return;
+    }
+
     $carrito = $_SESSION['carrito'] ?? [];
 
-    // 1. Identificar si hay una orden previa (por usuario o por sesión)
-    if (!$userId) {
-        $_SESSION['carrito_temporal_id'] = $sessionId;
-        $order = $this->orderRepository->findPendingBySessionId($sessionId);
-    } else {
-        $order = $this->orderRepository->findPendingByUserId((int)$userId);
-    }
+    // 1. Buscar orden pendiente del usuario
+    $order = $this->orderRepository->findPendingByUserId((int)$userId);
 
     // 2. Si el carrito está vacío, borramos la orden de la DB
     if (empty($carrito)) {
@@ -178,10 +179,7 @@ class CarritoController extends BaseController
 
     // 3. Crear o limpiar la orden existente
     if (!$order) {
-        $orderId = $this->orderRepository->createPendingOrder(
-            $userId ? (int)$userId : null, 
-            $userId ? null : $sessionId
-        );
+        $orderId = $this->orderRepository->createPendingOrder((int)$userId);
     } else {
         $orderId = $order->id;
         $this->orderItemRepository->deleteByOrderId($orderId);
