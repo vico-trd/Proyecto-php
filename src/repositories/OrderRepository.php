@@ -124,4 +124,28 @@ class OrderRepository implements RepositoryInterface
         $stmt = $this->db->prepare('UPDATE orders SET total = :total WHERE id = :id');
         return $stmt->execute(['total' => $total, 'id' => $orderId]);
     }
+
+    /**
+     * Confirma un pedido cambiando su estado de 'pending' a 'confirmed'.
+     */
+    public function confirmarPedido(int $orderId): bool
+    {
+        $stmt = $this->db->prepare("UPDATE orders SET status = 'confirmed' WHERE id = :id AND status = 'pending'");
+        return $stmt->execute(['id' => $orderId]);
+    }
+
+    /**
+     * Obtiene los items de un pedido con información del producto.
+     */
+    public function findItemsWithProductByOrderId(int $orderId): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT oi.*, p.name AS product_name
+             FROM order_items oi
+             INNER JOIN products p ON p.id = oi.product_id
+             WHERE oi.order_id = :order_id"
+        );
+        $stmt->execute(['order_id' => $orderId]);
+        return $stmt->fetchAll();
+    }
 }

@@ -23,14 +23,14 @@ class ProductoService
         return $this->productRepository->findAll();
     }
 
-    public function obtenerPorId(int $id): ?\App\Models\Product
+    public function obtenerPorId(int $id): ?Product
     {
         return $this->productRepository->findById($id);
     }
 
     /**
      * @param int[] $ids
-     * @return \App\Models\Product[]
+     * @return Product[]
      */
     public function obtenerPorIds(array $ids): array
     {
@@ -38,7 +38,7 @@ class ProductoService
     }
 
     /**
-     * @return \App\Models\Product[]
+     * @return Product[]
      */
     public function listarRecientes(int $limit = 4): array
     {
