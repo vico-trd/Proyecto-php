@@ -46,7 +46,7 @@ $etiquetas = [
                                 </span>
                             </td>
                             <td class="text-end">
-                                <a href="<?= BASE_URL ?>mis-pedidos/ver?id=<?= $pedido->id ?>"
+                                <a href="<?= BASE_URL ?>mis-pedidos/ver&id=<?= $pedido->id ?>"
                                    class="btn btn-sm btn-outline-dark">
                                     Ver detalle
                                 </a>
