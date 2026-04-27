@@ -7,8 +7,8 @@
         <p>Recibirás un correo electrónico con los detalles de tu pedido y el seguimiento del envío.</p>
         
         <div class="mt-4">
-            <a class="btn btn-primary btn-lg" href="/Proyecto-php/public/inicio" role="button">Volver a la tienda</a>
-            <a class="btn btn-outline-secondary btn-lg" href="#" role="button">Ver mis pedidos</a>
+            <a class="btn btn-primary btn-lg" href="<?= BASE_URL ?>inicio" role="button">Volver a la tienda</a>
+            <a class="btn btn-outline-secondary btn-lg" href="<?= BASE_URL ?>mis-pedidos" role="button">Ver mis pedidos</a>
         </div>
     </div>
 </div>
