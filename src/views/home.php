@@ -1,3 +1,71 @@
+
+<div class="home-wrapper">
+    <div class="hero-banner">
+        <h1>Colección Primavera 2026</h1>
+        <p>Estilo, comodidad y tendencia en cada prenda.</p>
+        <a href="<?= BASE_URL ?>categorias" class="btn-comprar">Ver Catálogo</a>
+    </div>
+
+    <h2 class="seccion-titulo">Compra por Categoría</h2>
+    <?php if (!empty($categorias)): ?>
+    <div class="grid-categorias">
+        <?php
+        $bgImages = [
+            'https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=600&q=80',
+        ];
+        ?>
+        <?php foreach ($categorias as $i => $cat): ?>
+            <a href="<?= BASE_URL ?>categoria/<?= (int)$cat->id ?>/productos" class="categoria-card"
+               style="background-image: url('<?= $bgImages[$i % count($bgImages)] ?>')">
+                <?= htmlspecialchars($cat->name, ENT_QUOTES, 'UTF-8') ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
+    <?php else: ?>
+    <p class="text-center text-muted mb-5">Próximamente nuevas categorías.</p>
+    <?php endif; ?>
+    <h2 class="seccion-titulo">Últimas Novedades</h2>
+    <?php if (!empty($productos)): ?>
+    <div class="grid-productos">
+        <?php foreach ($productos as $producto): ?>
+        <div class="producto-card">
+            <a href="<?= BASE_URL ?>producto/<?= $producto->id ?>">
+                 <?php if (!empty($producto->image)): ?>
+                            <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>"
+                                 alt="<?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?>"
+                                 class="card-img-top" style="height:220px;object-fit:cover;">
+                        <?php else: ?>
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:220px;">
+                                <i class="bi bi-image fs-1 text-muted"></i>
+                            </div>
+                        <?php endif; ?>
+                        
+                    </a>
+            
+                
+            <h3><?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?></h3>
+            <p class="precio"><?= number_format($producto->price, 2) ?> €</p>
+            <?php if ($producto->stock > 0): ?>
+                <form method="POST" action="<?= BASE_URL ?>carrito/agregar">
+                    <input type="hidden" name="producto_id" value="<?= (int)$producto->id ?>">
+                    <input type="hidden" name="cantidad" value="1">
+                    <button type="submit" class="btn-carrito">Añadir al carrito</button>
+                </form>
+            <?php else: ?>
+                <span class="btn-carrito" style="background:#e0e0e0;color:#888;cursor:not-allowed;">Sin stock</span>
+            <?php endif; ?>
+        </div>
+        <?php endforeach; ?>
+    </div>
+    <?php else: ?>
+    <p style="text-align:center;color:#888;">No hay productos disponibles aún.</p>
+    <?php endif; ?>
+</div>
 <style>
     /* Estilos exclusivos para la portada */
     .home-wrapper {
@@ -148,62 +216,3 @@
         color: white;
     }
 </style>
-
-<div class="home-wrapper">
-    <div class="hero-banner">
-        <h1>Colección Primavera 2026</h1>
-        <p>Estilo, comodidad y tendencia en cada prenda.</p>
-        <a href="<?= BASE_URL ?>categorias" class="btn-comprar">Ver Catálogo</a>
-    </div>
-
-    <h2 class="seccion-titulo">Compra por Categoría</h2>
-    <?php if (!empty($categorias)): ?>
-    <div class="grid-categorias">
-        <?php
-        $bgImages = [
-            'https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=600&q=80',
-            'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80',
-            'https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?auto=format&fit=crop&w=600&q=80',
-            'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=600&q=80',
-            'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80',
-            'https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=600&q=80',
-        ];
-        ?>
-        <?php foreach ($categorias as $i => $cat): ?>
-            <a href="<?= BASE_URL ?>categoria/<?= (int)$cat->id ?>/productos" class="categoria-card"
-               style="background-image: url('<?= $bgImages[$i % count($bgImages)] ?>')">
-                <?= htmlspecialchars($cat->name, ENT_QUOTES, 'UTF-8') ?>
-            </a>
-        <?php endforeach; ?>
-    </div>
-    <?php else: ?>
-    <p class="text-center text-muted mb-5">Próximamente nuevas categorías.</p>
-    <?php endif; ?>
-    <h2 class="seccion-titulo">Últimas Novedades</h2>
-    <?php if (!empty($productos)): ?>
-    <div class="grid-productos">
-        <?php foreach ($productos as $producto): ?>
-        <div class="producto-card">
-            <?php if (!empty($producto->image)): ?>
-                <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?>">
-            <?php else: ?>
-                <img src="https://via.placeholder.com/400x280" alt="<?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?>">
-            <?php endif; ?>
-            <h3><?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?></h3>
-            <p class="precio"><?= number_format($producto->price, 2) ?> €</p>
-            <?php if ($producto->stock > 0): ?>
-                <form method="POST" action="<?= BASE_URL ?>carrito/agregar">
-                    <input type="hidden" name="producto_id" value="<?= (int)$producto->id ?>">
-                    <input type="hidden" name="cantidad" value="1">
-                    <button type="submit" class="btn-carrito">Añadir al carrito</button>
-                </form>
-            <?php else: ?>
-                <span class="btn-carrito" style="background:#e0e0e0;color:#888;cursor:not-allowed;">Sin stock</span>
-            <?php endif; ?>
-        </div>
-        <?php endforeach; ?>
-    </div>
-    <?php else: ?>
-    <p style="text-align:center;color:#888;">No hay productos disponibles aún.</p>
-    <?php endif; ?>
-</div>
