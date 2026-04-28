@@ -24,7 +24,8 @@
                         <strong><?= htmlspecialchars($_SESSION['user']['name'] ?? '', ENT_QUOTES, 'UTF-8') ?></strong>
                         (<?= htmlspecialchars($_SESSION['user']['email'] ?? '', ENT_QUOTES, 'UTF-8') ?>)
                     </p>
-                    <form action="<?= BASE_URL ?>checkout/procesar" method="POST">
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="">
 
                         <div class="mb-4">
                             <label for="direccion" class="form-label">
@@ -34,9 +35,27 @@
                                       placeholder="Calle, número, piso, ciudad, código postal…" required></textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-danger w-100 py-2 fw-bold">
-                            Confirmar y finalizar compra
-                        </button>
+                        <!-- Métodos de pago -->
+                        <p class="fw-semibold mb-2">Elige el método de pago:</p>
+
+                        <div class="d-grid gap-2">
+                            <!-- Pago en tienda / confirmación directa -->
+                            <button type="submit"
+                                    formaction="<?= BASE_URL ?>checkout/procesar"
+                                    class="btn btn-danger py-2 fw-bold">
+                                Confirmar y pagar en tienda
+                            </button>
+
+                            <!-- PayPal -->
+                            <button type="submit"
+                                    formaction="<?= BASE_URL ?>checkout/paypal/crear"
+                                    class="btn p-0 border-0">
+                                <img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png"
+                                     alt="Pagar con PayPal"
+                                     style="height:45px; border-radius:6px;">
+                            </button>
+                        </div>
+
                         <a href="<?= BASE_URL ?>carrito" class="btn btn-link w-100 text-center mt-2">
                             ← Volver al carrito
                         </a>
