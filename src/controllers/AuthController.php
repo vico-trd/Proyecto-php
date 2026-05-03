@@ -2,11 +2,10 @@
 
 namespace App\Controllers;
 
-use App\Request\UserRequest;
-use App\Request\LoginRequest;
+use App\Requests\UserRequest;
+use App\Requests\LoginRequest;
 use App\Repositories\UserRepository;
 use App\Models\User;
-use App\Controllers\CarritoController;
 use App\Repositories\OrderRepository;
 use App\Repositories\OrderItemRepository;
 use App\Repositories\PasswordResetRepository;
@@ -40,29 +39,20 @@ class AuthController extends BaseController
         if (!$request->validateRegister()) {
             $this->render('auth/register', [
                 'errors' => $request->getErrors(),
-                'old' => $request->all(),
+                'old'    => $request->all(),
             ]);
             return;
         }
 
-        $existingUser = $this->userRepository->findByEmail($request->get('email'));
-        if ($existingUser) {
+        $user = $this->saveNewUser($request, 'user');
+
+        if (!$user) {
             $this->render('auth/register', [
                 'errors' => ['email' => 'Este email ya está registrado.'],
-                'old' => $request->all(),
+                'old'    => $request->all(),
             ]);
             return;
         }
-
-        $user = new User(
-            id: 0,
-            name: $request->get('name'),
-            email: $request->get('email'),
-            password: password_hash($request->get('password'), PASSWORD_BCRYPT),
-            role: 'user'
-        );
-
-        $this->userRepository->save($user);
 
         try {
             $emailService = new EmailService();
@@ -160,21 +150,30 @@ class AuthController extends BaseController
         if (!$request->validateRegister()) {
             $this->render('admin/create-user', [
                 'errors' => $request->getErrors(),
-                'old' => $request->all(),
-            ]);
-            return;
-        }
-
-        $existingUser = $this->userRepository->findByEmail($request->get('email'));
-        if ($existingUser) {
-            $this->render('admin/create-user', [
-                'errors' => ['email' => 'Este email ya está registrado.'],
-                'old' => $request->all(),
+                'old'    => $request->all(),
             ]);
             return;
         }
 
         $role = in_array($_POST['role'] ?? '', ['admin', 'user']) ? $_POST['role'] : 'user';
+        $user = $this->saveNewUser($request, $role);
+
+        if (!$user) {
+            $this->render('admin/create-user', [
+                'errors' => ['email' => 'Este email ya está registrado.'],
+                'old'    => $request->all(),
+            ]);
+            return;
+        }
+
+        $this->redirect('admin/users/create');
+    }
+
+    private function saveNewUser(UserRequest $request, string $role): ?User
+    {
+        if ($this->userRepository->findByEmail($request->get('email'))) {
+            return null;
+        }
 
         $user = new User(
             id: 0,
@@ -185,7 +184,7 @@ class AuthController extends BaseController
         );
 
         $this->userRepository->save($user);
-        $this->redirect('admin/users/create');
+        return $user;
     }
 
     private function isAdmin(): bool
