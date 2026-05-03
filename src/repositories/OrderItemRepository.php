@@ -117,7 +117,7 @@ class OrderItemRepository implements RepositoryInterface
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['order_id' => $orderId]);
         
-        return $stmt->fetchAll(\PDO::FETCH_OBJ);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
     /**
@@ -126,13 +126,13 @@ class OrderItemRepository implements RepositoryInterface
     public function findDetailedByOrderId(int $orderId): array
     {
         $sql = "SELECT oi.id, oi.quantity, oi.price,
-                       p.id AS product_id, p.name AS product_name, p.image AS product_image
+                p.id AS product_id, p.name AS product_name, p.image AS product_image
                 FROM order_items oi
                 INNER JOIN products p ON p.id = oi.product_id
                 WHERE oi.order_id = :order_id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['order_id' => $orderId]);
-        return $stmt->fetchAll(\PDO::FETCH_OBJ);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
     // En OrderItemRepository.php

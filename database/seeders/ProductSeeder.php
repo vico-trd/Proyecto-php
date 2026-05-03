@@ -351,7 +351,13 @@ class ProductSeeder extends SeederBase
              VALUES (:name, :category_id, :description, :price, :stock, :image)'
         );
 
+        // Descargar imágenes placeholder si no existen en uploads
+        $this->descargarImagenes(count($productos));
+
+        $n = 0;
         foreach ($productos as $p) {
+            $n++;
+
             // Resolver categoría
             $categoryId = $catMap[$p['category']] ?? null;
             if (!$categoryId) {
@@ -366,15 +372,60 @@ class ProductSeeder extends SeederBase
                 continue;
             }
 
+            // Usar imagen seed si el producto no tiene una asignada
+            $imagen = !empty($p['image']) ? $p['image'] : "seed_product_{$n}.jpg";
+
             $insert->execute([
                 'name'        => $p['name'],
                 'category_id' => $categoryId,
                 'description' => $p['description'],
                 'price'       => $p['price'],
                 'stock'       => $p['stock'],
-                'image'       => $p['image'],
+                'image'       => $imagen,
             ]);
             $this->log("Producto creado: {$p['name']} [{$p['category']}] — {$p['price']} €");
+        }
+    }
+
+    /**
+     * Descarga imágenes placeholder de picsum.photos si no existen en uploads.
+     * Usa seeds deterministas: el mismo número siempre devuelve la misma imagen.
+     */
+    private function descargarImagenes(int $total): void
+    {
+        $uploadsDir = dirname(__DIR__, 2) . '/public/uploads/images/';
+
+        if (!is_dir($uploadsDir)) {
+            mkdir($uploadsDir, 0755, true);
+        }
+
+        for ($i = 1; $i <= $total; $i++) {
+            $filename = "seed_product_{$i}.jpg";
+            $dest     = $uploadsDir . $filename;
+
+            if (file_exists($dest)) {
+                continue;
+            }
+
+            $url = "https://picsum.photos/seed/{$i}/400/500";
+            $ctx = stream_context_create([
+                'http' => [
+                    'timeout'         => 15,
+                    'follow_location' => 1,
+                ],
+                'ssl' => [
+                    'verify_peer'      => false,
+                    'verify_peer_name' => false,
+                ],
+            ]);
+            $data = @file_get_contents($url, false, $ctx);
+
+            if ($data !== false && strlen($data) > 1000) {
+                file_put_contents($dest, $data);
+                $this->log("Imagen descargada: {$filename}");
+            } else {
+                $this->warn("No se pudo descargar: {$filename} — el producto se guardará sin imagen");
+            }
         }
     }
 }
