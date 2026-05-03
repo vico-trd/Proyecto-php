@@ -20,7 +20,7 @@ class ProductoController extends BaseController
         $this->categoriaService = new CategoriaService();
     }
 
-    private function authorizeAdmin(): void
+    private function requireAdmin(): void
     {
         $middleware = new AdminMiddleware();
         $middleware->handle(fn() => true);

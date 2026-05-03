@@ -6,7 +6,7 @@
             <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
         <?php endif; ?>
 
-        <form action="/Proyecto-php/public/login" method="POST">
+        <form action="<?= BASE_URL ?>login" method="POST">
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" name="email" id="email" class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($old['email'] ?? '') ?>">
@@ -43,6 +43,6 @@
             Iniciar sesión con Google
         </a>
 
-        <p class="mt-3 text-center">¿No tienes cuenta? <a href="/Proyecto-php/public/register">Regístrate</a></p>
+        <p class="mt-3 text-center">¿No tienes cuenta? <a href="<?= BASE_URL ?>register">Regístrate</a></p>
     </div>
 </div>
