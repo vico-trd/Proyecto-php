@@ -45,7 +45,7 @@ class ProductoController extends BaseController
     
     public function gestion(): void
     {
-        $this->authorizeAdmin();
+        $this->requireAdmin();
 
         $productos = $this->productoService->listar();
         $categorias = $this->categoriaService->listar();
@@ -60,7 +60,7 @@ class ProductoController extends BaseController
 
     public function crear(): void
     {
-        $this->authorizeAdmin();
+        $this->requireAdmin();
 
         $categorias = $this->categoriaService->listar();
         $errores = $_SESSION['errores'] ?? [];
@@ -72,7 +72,7 @@ class ProductoController extends BaseController
 
     public function guardar(): void
     {
-        $this->authorizeAdmin();
+        $this->requireAdmin();
 
         $request = new ProductoRequest();
 
@@ -99,7 +99,7 @@ class ProductoController extends BaseController
 
     public function editar(int $id): void
     {
-        $this->authorizeAdmin();
+        $this->requireAdmin();
 
         $producto = $this->productoService->obtenerPorId($id);
         if (!$producto) {
@@ -117,7 +117,7 @@ class ProductoController extends BaseController
 
     public function actualizar(int $id): void
     {
-        $this->authorizeAdmin();
+        $this->requireAdmin();
 
         $request = new ProductoRequest();
 
@@ -144,7 +144,7 @@ class ProductoController extends BaseController
 
     public function eliminar(int $id): void
     {
-        $this->authorizeAdmin();
+        $this->requireAdmin();
 
         $result = $this->productoService->eliminar($id);
 
