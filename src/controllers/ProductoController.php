@@ -29,7 +29,7 @@ class ProductoController extends BaseController
     /**
      * Esta función es la que busca el Router cuando pones /producto
      */
-   public function show(int $id): void
+    public function show(int $id): void
     {
         $producto = $this->productoService->obtenerPorId($id);
 
@@ -80,6 +80,7 @@ class ProductoController extends BaseController
             $_SESSION['errores'] = $request->getErrors();
             $_SESSION['old'] = $_POST;
             $this->redirect('productos/crear');
+            return;
         }
 
         $data = $request->sanitize($_POST);
@@ -90,6 +91,7 @@ class ProductoController extends BaseController
         if ($result === true) {
             $_SESSION['product_save'] = 'complete';
             $this->redirect('productos/gestion');
+            return;
         }
 
         $_SESSION['errores'] = ['general' => is_string($result) ? $result : 'No se pudo guardar el producto.'];
@@ -125,6 +127,7 @@ class ProductoController extends BaseController
             $_SESSION['errores'] = $request->getErrors();
             $_SESSION['old'] = $_POST;
             $this->redirect('productos/editar/' . $id);
+            return;
         }
 
         $data = $request->sanitize($_POST);
@@ -135,6 +138,7 @@ class ProductoController extends BaseController
         if ($result === true) {
             $_SESSION['product_save'] = 'complete';
             $this->redirect('productos/gestion');
+            return;
         }
 
         $_SESSION['errores'] = ['general' => is_string($result) ? $result : 'No se pudo actualizar el producto.'];
