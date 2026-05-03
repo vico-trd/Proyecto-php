@@ -6,7 +6,7 @@ use App\Middleware\AdminMiddleware;
 use App\Services\CategoriaService;
 use App\Requests\CategoriaRequest;
 
-class CategoriaController
+class CategoriaController extends BaseController
 {
     private CategoriaService $service;
 
@@ -55,8 +55,7 @@ class CategoriaController
         if (!$request->validate($_POST)) {
             $_SESSION['errores'] = $request->getErrors();
             $_SESSION['old'] = $_POST;
-            header('Location: ' . BASE_URL . 'categorias/crear');
-            exit();
+            $this->redirect('categorias/crear');
         }
 
         $data = $request->sanitize($_POST);
@@ -64,13 +63,12 @@ class CategoriaController
 
         if ($resultado === true) {
             $_SESSION['mensaje'] = 'Categoría creada correctamente.';
-            header('Location: ' . BASE_URL . 'categorias');
+            $this->redirect('categorias');
         } else {
             $_SESSION['errores'] = ['name' => is_string($resultado) ? $resultado : 'Error al crear la categoría.'];
             $_SESSION['old'] = $_POST;
-            header('Location: ' . BASE_URL . 'categorias/crear');
+            $this->redirect('categorias/crear');
         }
-        exit();
     }
 
     /**
@@ -82,8 +80,7 @@ class CategoriaController
         $categoria = $this->service->obtenerPorId((int)$id);
 
         if (!$categoria) {
-            header('Location: ' . BASE_URL . '404');
-            exit();
+            $this->redirect('404');
             return;
         }
 
@@ -106,8 +103,7 @@ class CategoriaController
         if (!$request->validate($_POST)) {
             $_SESSION['errores'] = $request->getErrors();
             $_SESSION['old'] = $_POST;
-            header('Location: ' . BASE_URL . 'categorias/editar/' . $id);
-            exit();
+            $this->redirect('categorias/editar/' . $id);
         }
 
         $data = $request->sanitize($_POST);
@@ -115,13 +111,12 @@ class CategoriaController
 
         if ($resultado === true) {
             $_SESSION['mensaje'] = 'Categoría actualizada correctamente.';
-            header('Location: ' . BASE_URL . 'categorias');
+            $this->redirect('categorias');
         } else {
             $_SESSION['errores'] = ['name' => is_string($resultado) ? $resultado : 'Error al actualizar la categoría.'];
             $_SESSION['old'] = $_POST;
-            header('Location: ' . BASE_URL . 'categorias/editar/' . $id);
+            $this->redirect('categorias/editar/' . $id);
         }
-        exit();
     }
 
     /**
@@ -139,8 +134,7 @@ class CategoriaController
             $_SESSION['errores'] = ['general' => is_string($resultado) ? $resultado : 'No se pudo eliminar la categoría.'];
         }
 
-        header('Location: ' . BASE_URL . 'categorias');
-        exit();
+        $this->redirect('categorias');
     }
     public function ver(): void
     {

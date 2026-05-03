@@ -9,7 +9,7 @@ use App\Services\CategoriaService;
 use App\Services\ProductoService;
 
 
-class ProductoController
+class ProductoController extends BaseController
 {
     private ProductoService $productoService;
     private CategoriaService $categoriaService;
@@ -34,7 +34,8 @@ class ProductoController
         $producto = $this->productoService->obtenerPorId($id);
 
         if (!$producto) {
-            die("¡HOLA! He intentado buscar en Base de Datos el producto con ID: " . var_export($id, true) . ". Pero el servicio ha dicho que no existe. ¿Estás seguro de que existe en la tabla 'products'?");
+            $this->redirect('404');
+            return;
         }
 
         require __DIR__ . '/../views/pages/producto.php';
@@ -78,8 +79,7 @@ class ProductoController
         if (!$request->validate($_POST, $_FILES)) {
             $_SESSION['errores'] = $request->getErrors();
             $_SESSION['old'] = $_POST;
-            header('Location: ' . BASE_URL . 'productos/crear');
-            exit();
+            $this->redirect('productos/crear');
         }
 
         $data = $request->sanitize($_POST);
@@ -89,14 +89,12 @@ class ProductoController
 
         if ($result === true) {
             $_SESSION['product_save'] = 'complete';
-            header('Location: ' . BASE_URL . 'productos/gestion');
-            exit();
+            $this->redirect('productos/gestion');
         }
 
         $_SESSION['errores'] = ['general' => is_string($result) ? $result : 'No se pudo guardar el producto.'];
         $_SESSION['old'] = $_POST;
-        header('Location: ' . BASE_URL . 'productos/crear');
-        exit();
+        $this->redirect('productos/crear');
     }
 
     public function editar(int $id): void
@@ -105,8 +103,8 @@ class ProductoController
 
         $producto = $this->productoService->obtenerPorId($id);
         if (!$producto) {
-            header('Location: ' . BASE_URL . '404');
-            exit();
+            $this->redirect('404');
+            return;
         }
 
         $categorias = $this->categoriaService->listar();
@@ -126,8 +124,7 @@ class ProductoController
         if (!$request->validate($_POST, $_FILES)) {
             $_SESSION['errores'] = $request->getErrors();
             $_SESSION['old'] = $_POST;
-            header('Location: ' . BASE_URL . 'productos/editar/' . $id);
-            exit();
+            $this->redirect('productos/editar/' . $id);
         }
 
         $data = $request->sanitize($_POST);
@@ -137,14 +134,12 @@ class ProductoController
 
         if ($result === true) {
             $_SESSION['product_save'] = 'complete';
-            header('Location: ' . BASE_URL . 'productos/gestion');
-            exit();
+            $this->redirect('productos/gestion');
         }
 
         $_SESSION['errores'] = ['general' => is_string($result) ? $result : 'No se pudo actualizar el producto.'];
         $_SESSION['old'] = $_POST;
-        header('Location: ' . BASE_URL . 'productos/editar/' . $id);
-        exit();
+        $this->redirect('productos/editar/' . $id);
     }
 
     public function eliminar(int $id): void
@@ -159,8 +154,7 @@ class ProductoController
             $_SESSION['product_error'] = is_string($result) ? $result : 'No se pudo eliminar el producto.';
         }
 
-        header('Location: ' . BASE_URL . 'productos/gestion');
-        exit();
+        $this->redirect('productos/gestion');
     }
 
     public function porCategoria(int $categoryId): void
@@ -172,8 +166,7 @@ class ProductoController
         $category = $this->categoriaService->obtenerPorId($categoryId);
 
         if (!$category) {
-            header('Location: ' . BASE_URL . '404');
-            exit();
+            $this->redirect('404');
             return;
         }
 
