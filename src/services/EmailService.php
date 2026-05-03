@@ -118,6 +118,54 @@ class EmailService
         $this->mailer->send();
     }
 
+    /**
+     * Envía el correo con el enlace para restablecer la contraseña.
+     *
+     * @throws Exception Si el envío falla.
+     */
+    public function enviarRecuperacion(string $destinatarioEmail, string $destinatarioNombre, string $resetUrl): void
+    {
+        $this->mailer->clearAddresses();
+        $this->mailer->addAddress($destinatarioEmail, $destinatarioNombre);
+
+        $nombreEsc  = htmlspecialchars($destinatarioNombre, ENT_QUOTES, 'UTF-8');
+        $urlEsc     = htmlspecialchars($resetUrl, ENT_QUOTES, 'UTF-8');
+
+        $this->mailer->isHTML(true);
+        $this->mailer->Subject = 'Restablece tu contraseña – Clothing Store';
+        $this->mailer->Body    = <<<HTML
+        <!DOCTYPE html>
+        <html lang="es">
+        <head><meta charset="UTF-8">
+        <style>
+            body       { font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:0; }
+            .container { max-width:600px; margin:30px auto; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+            .header    { background:#1a1a1a; color:#fff; padding:24px 32px; }
+            .header h1 { margin:0; font-size:22px; letter-spacing:1px; }
+            .body      { padding:32px; color:#333; line-height:1.7; }
+            .btn       { display:inline-block; margin-top:20px; padding:12px 28px; background:#ff4757; color:#fff; text-decoration:none; border-radius:4px; font-weight:bold; }
+            .footer    { background:#f4f4f4; text-align:center; padding:16px; font-size:12px; color:#999; }
+        </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header"><h1>🛍 Clothing Store</h1></div>
+                <div class="body">
+                    <p>Hola, <strong>{$nombreEsc}</strong>.</p>
+                    <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta. Haz clic en el botón para continuar:</p>
+                    <a href="{$urlEsc}" class="btn">Restablecer contraseña</a>
+                    <p style="margin-top:24px;font-size:13px;color:#888;">Este enlace es válido durante <strong>1 hora</strong>. Si no solicitaste el cambio, puedes ignorar este mensaje; tu cuenta permanece segura.</p>
+                </div>
+                <div class="footer">&copy; Clothing Store · Este correo se generó automáticamente.</div>
+            </div>
+        </body>
+        </html>
+        HTML;
+        $this->mailer->AltBody = "Hola, {$destinatarioNombre}.\n\nPara restablecer tu contraseña visita el siguiente enlace (válido 1 hora):\n{$resetUrl}\n\nSi no solicitaste el cambio, ignora este correo.";
+
+        $this->mailer->send();
+    }
+
     // ─── Cuerpo HTML ───────────────────────────────────────────────────────────
 
     private function construirCuerpoHtml(

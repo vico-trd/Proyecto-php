@@ -119,5 +119,11 @@ class UserRepository implements RepositoryInterface
 
         return $this->findByEmail($email);
     }
+
+    public function updatePassword(string $email, string $hashedPassword): bool
+    {
+        $stmt = $this->db->prepare('UPDATE users SET password = :password WHERE email = :email');
+        return $stmt->execute(['password' => $hashedPassword, 'email' => $email]);
+    }
 }
 ?>

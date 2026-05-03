@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Repositories;
+
+use PDO;
+use App\Core\Database;
+
+class PasswordResetRepository
+{
+    private PDO $db;
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance()->getConnection();
+    }
+
+    public function create(string $email, string $token, \DateTimeImmutable $expiresAt): void
+    {
+        // Eliminar tokens anteriores del mismo email
+        $this->deleteByEmail($email);
+
+        $stmt = $this->db->prepare(
+            'INSERT INTO password_resets (email, token, expires_at) VALUES (:email, :token, :expires_at)'
+        );
+        $stmt->execute([
+            'email'      => $email,
+            'token'      => $token,
+            'expires_at' => $expiresAt->format('Y-m-d H:i:s'),
+        ]);
+    }
+
+    public function findValidToken(string $token): ?array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT * FROM password_resets WHERE token = :token AND expires_at > NOW() LIMIT 1'
+        );
+        $stmt->execute(['token' => $token]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row ?: null;
+    }
+
+    public function deleteByToken(string $token): void
+    {
+        $stmt = $this->db->prepare('DELETE FROM password_resets WHERE token = :token');
+        $stmt->execute(['token' => $token]);
+    }
+
+    public function deleteByEmail(string $email): void
+    {
+        $stmt = $this->db->prepare('DELETE FROM password_resets WHERE email = :email');
+        $stmt->execute(['email' => $email]);
+    }
+}

@@ -45,5 +45,15 @@ CREATE TABLE IF NOT EXISTS order_items (
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
+CREATE TABLE IF NOT EXISTS password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) NOT NULL,
+    token VARCHAR(64) NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_token (token),
+    INDEX idx_email (email)
+);
+
 INSERT INTO users (name, email, password, role)
 VALUES ('admin', 'admin@gmail.com', '$2y$10$P9d4f5vmBqjDepCbDxeXWevFrmVIxWhTtAHrxNUVMdznmhrIZk3zG', 'admin');

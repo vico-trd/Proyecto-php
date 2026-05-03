@@ -2,6 +2,10 @@
     <div class="col-md-6 col-lg-5">
         <h2>Iniciar sesión</h2>
 
+        <?php if (isset($success)): ?>
+            <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+        <?php endif; ?>
+
         <form action="/Proyecto-php/public/login" method="POST">
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
@@ -24,6 +28,8 @@
 
             <button type="submit" class="btn btn-primary w-100">Entrar</button>
         </form>
+
+        <p class="mt-2 text-center"><a href="<?= BASE_URL ?>forgot-password" class="text-muted small">¿Olvidaste tu contraseña?</a></p>
 
         <div class="my-3 text-center text-muted">— o —</div>
 
