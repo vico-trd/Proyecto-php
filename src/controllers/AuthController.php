@@ -221,7 +221,7 @@ class AuthController extends BaseController
 
             $this->passwordResetRepository->create($email, $token, $expiresAt);
 
-            $resetUrl = rtrim(BASE_URL, '/') . '/reset-password?token=' . urlencode($token);
+            $resetUrl = 'http://' . $_SERVER['HTTP_HOST'] . BASE_URL . 'reset-password&token=' . urlencode($token);
 
             try {
                 $emailService = new EmailService();
