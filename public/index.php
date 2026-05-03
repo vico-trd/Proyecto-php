@@ -19,27 +19,4 @@ $router = new Router();
 
 require_once __DIR__ . '/../routes/web.php';
 
-
-// --- Rutas de Categorías ---
-$router->get('categorias', [\App\Controllers\CategoriaController::class, 'index']);
-$router->get('categorias/crear', [\App\Controllers\CategoriaController::class, 'crear']);
-$router->post('categorias/crear', [\App\Controllers\CategoriaController::class, 'guardar']);
-$router->get('categorias/editar/{id}', [\App\Controllers\CategoriaController::class, 'editar']);
-$router->post('categorias/editar/{id}', [\App\Controllers\CategoriaController::class, 'actualizar']);
-$router->post('categorias/eliminar/{id}', [\App\Controllers\CategoriaController::class, 'eliminar']);
-
-// --- Rutas de Productos (inventario, protegidas por AdminMiddleware) ---
-$router->get('productos/gestion', [\App\Controllers\ProductoController::class, 'gestion']);
-$router->get('productos/crear', [\App\Controllers\ProductoController::class, 'crear']);
-$router->post('productos/guardar', [\App\Controllers\ProductoController::class, 'guardar']);
-$router->get('productos/editar/{id}', [\App\Controllers\ProductoController::class, 'editar']);
-$router->post('productos/editar/{id}', [\App\Controllers\ProductoController::class, 'actualizar']);
-$router->post('productos/eliminar/{id}', [\App\Controllers\ProductoController::class, 'eliminar']);
-
-// --- Ruta publica de productos por categoria con paginacion ---
-$router->get('categoria/{id}/productos', [\App\Controllers\ProductoController::class, 'porCategoria']);
-
-// --- Ruta de error ---
-$router->get('404', [\App\Controllers\ErrorController::class, 'notFound']);
-
 $router->dispatch();

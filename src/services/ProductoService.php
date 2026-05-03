@@ -76,34 +76,10 @@ class ProductoService
             return 'La categoria seleccionada no existe.';
         }
 
-        $imageName = '';
-
-        if (is_array($imageFile) && ($imageFile['name'] ?? '') !== '') {
-            if (($imageFile['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
-                return 'No se pudo procesar la imagen subida.';
-            }
-
-            $extension = strtolower(pathinfo((string)$imageFile['name'], PATHINFO_EXTENSION));
-            $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-            if (!in_array($extension, $allowed, true)) {
-                return 'El formato de imagen no esta permitido.';
-            }
-
-            $uploadDir = __DIR__ . '/../../public/uploads/images';
-            if (!is_dir($uploadDir) && !mkdir($uploadDir, 0775, true) && !is_dir($uploadDir)) {
-                return 'No se pudo crear la carpeta de imagenes.';
-            }
-
-            try {
-                $imageName = time() . '_' . bin2hex(random_bytes(6)) . '.' . $extension;
-            } catch (\Exception $e) {
-                $imageName = time() . '_' . uniqid('', true) . '.' . $extension;
-            }
-
-            $targetPath = $uploadDir . DIRECTORY_SEPARATOR . $imageName;
-            if (!move_uploaded_file($imageFile['tmp_name'], $targetPath)) {
-                return 'No se pudo guardar la imagen en el servidor.';
-            }
+        try {
+            $imageName = $this->handleImageUpload($imageFile);
+        } catch (\RuntimeException $e) {
+            return $e->getMessage();
         }
 
         $product = new Product(
@@ -130,42 +106,10 @@ class ProductoService
             return 'La categoria seleccionada no existe.';
         }
 
-        $imageName = $product->image;
-
-        if (is_array($imageFile) && ($imageFile['name'] ?? '') !== '') {
-            if (($imageFile['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
-                return 'No se pudo procesar la imagen subida.';
-            }
-
-            $extension = strtolower(pathinfo((string)$imageFile['name'], PATHINFO_EXTENSION));
-            $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-            if (!in_array($extension, $allowed, true)) {
-                return 'El formato de imagen no esta permitido.';
-            }
-
-            $uploadDir = __DIR__ . '/../../public/uploads/images';
-            if (!is_dir($uploadDir) && !mkdir($uploadDir, 0775, true) && !is_dir($uploadDir)) {
-                return 'No se pudo crear la carpeta de imagenes.';
-            }
-
-            try {
-                $newImageName = time() . '_' . bin2hex(random_bytes(6)) . '.' . $extension;
-            } catch (\Exception $e) {
-                $newImageName = time() . '_' . uniqid('', true) . '.' . $extension;
-            }
-
-            if (!move_uploaded_file($imageFile['tmp_name'], $uploadDir . DIRECTORY_SEPARATOR . $newImageName)) {
-                return 'No se pudo guardar la imagen en el servidor.';
-            }
-
-            if ($imageName !== '') {
-                $oldPath = $uploadDir . DIRECTORY_SEPARATOR . $imageName;
-                if (file_exists($oldPath)) {
-                    @unlink($oldPath);
-                }
-            }
-
-            $imageName = $newImageName;
+        try {
+            $imageName = $this->handleImageUpload($imageFile, $product->image);
+        } catch (\RuntimeException $e) {
+            return $e->getMessage();
         }
 
         $updated = new Product(
@@ -200,5 +144,50 @@ class ProductoService
         }
 
         return $this->productRepository->delete($id);
+    }
+
+    /**
+     * Procesa la subida de una imagen. Si se sube una nueva imagen, elimina la anterior.
+     * @throws \RuntimeException con el mensaje de error si falla.
+     */
+    private function handleImageUpload(?array $imageFile, string $oldImage = ''): string
+    {
+        if (!is_array($imageFile) || ($imageFile['name'] ?? '') === '') {
+            return $oldImage;
+        }
+
+        if (($imageFile['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            throw new \RuntimeException('No se pudo procesar la imagen subida.');
+        }
+
+        $extension = strtolower(pathinfo((string)$imageFile['name'], PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+        if (!in_array($extension, $allowed, true)) {
+            throw new \RuntimeException('El formato de imagen no esta permitido.');
+        }
+
+        $uploadDir = __DIR__ . '/../../public/uploads/images';
+        if (!is_dir($uploadDir) && !mkdir($uploadDir, 0775, true) && !is_dir($uploadDir)) {
+            throw new \RuntimeException('No se pudo crear la carpeta de imagenes.');
+        }
+
+        try {
+            $newName = time() . '_' . bin2hex(random_bytes(6)) . '.' . $extension;
+        } catch (\Exception) {
+            $newName = time() . '_' . uniqid('', true) . '.' . $extension;
+        }
+
+        if (!move_uploaded_file($imageFile['tmp_name'], $uploadDir . DIRECTORY_SEPARATOR . $newName)) {
+            throw new \RuntimeException('No se pudo guardar la imagen en el servidor.');
+        }
+
+        if ($oldImage !== '') {
+            $oldPath = $uploadDir . DIRECTORY_SEPARATOR . $oldImage;
+            if (file_exists($oldPath)) {
+                @unlink($oldPath);
+            }
+        }
+
+        return $newName;
     }
 }
