@@ -39,3 +39,4 @@ $router->get('confirmacion', [\App\Controllers\CheckoutController::class, 'confi
 $router->get('producto/{id}', [\App\Controllers\ProductoController::class, 'show']);
 $router->get('mis-pedidos', [\App\Controllers\PedidoController::class, 'index']);
 $router->get('mis-pedidos/ver', [\App\Controllers\PedidoController::class, 'ver']);
+$router->post('mis-pedidos/actualizar', [\App\Controllers\PedidoController::class, 'actualizarEstado']);

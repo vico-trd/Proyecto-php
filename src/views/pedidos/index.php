@@ -1,6 +1,8 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold mb-0">Mis pedidos</h2>
+        <h2 class="fw-bold mb-0">
+            <?= isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin' ? 'Todos los pedidos (Admin)' : 'Mis pedidos' ?>
+        </h2>
         <a href="<?= BASE_URL ?>" class="btn btn-outline-dark btn-sm">
             <i class="bi bi-arrow-left me-1"></i> Seguir comprando
         </a>
@@ -18,6 +20,9 @@
                 <thead class="table-dark">
                     <tr>
                         <th>#Pedido</th>
+                        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
+                            <th>#Usuario</th>
+                        <?php endif; ?>
                         <th>Fecha</th>
                         <th>Total</th>
                         <th>Estado</th>
@@ -37,6 +42,9 @@
                         ?>
                         <tr>
                             <td class="fw-semibold">#<?= $pedido->id ?></td>
+                            <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
+                                <td>Usuario <?= $pedido->user_id ?? 'Invitado' ?></td>
+                            <?php endif; ?>
                             <td>
                                 <?= $pedido->created_at
                                     ? date('d/m/Y H:i', strtotime($pedido->created_at))
