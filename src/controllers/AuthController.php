@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Controllers\CarritoController;
 use App\Repositories\OrderRepository;
 use App\Repositories\OrderItemRepository;
+use App\Repositories\PasswordResetRepository;
 use App\Services\EmailService;
 use PHPMailer\PHPMailer\Exception;
 
@@ -17,12 +18,14 @@ class AuthController extends BaseController
     private UserRepository $userRepository;
     private OrderRepository $orderRepository;
     private OrderItemRepository $orderItemRepository;
+    private PasswordResetRepository $passwordResetRepository;
 
     public function __construct()
     {
-        $this->userRepository = new UserRepository();
-        $this->orderRepository = new OrderRepository();
-        $this->orderItemRepository = new OrderItemRepository();
+        $this->userRepository          = new UserRepository();
+        $this->orderRepository         = new OrderRepository();
+        $this->orderItemRepository     = new OrderItemRepository();
+        $this->passwordResetRepository = new PasswordResetRepository();
     }
 
     public function showRegister(): void
@@ -188,6 +191,111 @@ class AuthController extends BaseController
     private function isAdmin(): bool
     {
         return isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin';
+    }
+
+    // ─── Recuperación de contraseña ────────────────────────────────────────────
+
+    public function showForgotPassword(): void
+    {
+        $this->render('auth/forgot-password');
+    }
+
+    public function forgotPassword(): void
+    {
+        $email = trim($_POST['email'] ?? '');
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->render('auth/forgot-password', [
+                'errors' => ['email' => 'Introduce un email válido.'],
+                'old'    => ['email' => $email],
+            ]);
+            return;
+        }
+
+        // Respuesta genérica para no revelar si el email existe
+        $user = $this->userRepository->findByEmail($email);
+
+        if ($user) {
+            $token     = bin2hex(random_bytes(32));
+            $expiresAt = new \DateTimeImmutable('+1 hour');
+
+            $this->passwordResetRepository->create($email, $token, $expiresAt);
+
+            $resetUrl = 'http://' . $_SERVER['HTTP_HOST'] . BASE_URL . 'reset-password&token=' . urlencode($token);
+
+            try {
+                $emailService = new EmailService();
+                $emailService->enviarRecuperacion($user->email, $user->name, $resetUrl);
+            } catch (Exception $e) {
+                error_log('[EmailService] No se pudo enviar el correo de recuperación: ' . $e->getMessage());
+            }
+        }
+
+        $this->render('auth/forgot-password', [
+            'success' => 'Si ese email está registrado, recibirás un enlace para restablecer tu contraseña.',
+        ]);
+    }
+
+    public function showResetPassword(): void
+    {
+        $token = $_GET['token'] ?? '';
+
+        if (empty($token)) {
+            $this->redirect('forgot-password');
+            return;
+        }
+
+        $record = $this->passwordResetRepository->findValidToken($token);
+
+        if (!$record) {
+            $this->render('auth/forgot-password', [
+                'errors' => ['email' => 'El enlace no es válido o ha expirado. Solicita uno nuevo.'],
+            ]);
+            return;
+        }
+
+        $this->render('auth/reset-password', ['token' => htmlspecialchars($token, ENT_QUOTES, 'UTF-8')]);
+    }
+
+    public function resetPassword(): void
+    {
+        $token    = $_POST['token']            ?? '';
+        $password = $_POST['password']         ?? '';
+        $confirm  = $_POST['confirm_password'] ?? '';
+
+        $record = $this->passwordResetRepository->findValidToken($token);
+
+        if (!$record) {
+            $this->render('auth/forgot-password', [
+                'errors' => ['email' => 'El enlace no es válido o ha expirado. Solicita uno nuevo.'],
+            ]);
+            return;
+        }
+
+        $errors = [];
+
+        if (strlen($password) < 8) {
+            $errors['password'] = 'La contraseña debe tener al menos 8 caracteres.';
+        }
+
+        if ($password !== $confirm) {
+            $errors['confirm_password'] = 'Las contraseñas no coinciden.';
+        }
+
+        if ($errors) {
+            $this->render('auth/reset-password', [
+                'token'  => htmlspecialchars($token, ENT_QUOTES, 'UTF-8'),
+                'errors' => $errors,
+            ]);
+            return;
+        }
+
+        $this->userRepository->updatePassword($record['email'], password_hash($password, PASSWORD_BCRYPT));
+        $this->passwordResetRepository->deleteByToken($token);
+
+        $this->render('auth/login', [
+            'success' => 'Contraseña actualizada correctamente. Ya puedes iniciar sesión.',
+        ]);
     }
 
     private function buildGoogleClient(): \Google\Client

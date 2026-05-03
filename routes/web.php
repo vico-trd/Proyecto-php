@@ -13,6 +13,12 @@ $router->post('login', [AuthController::class, 'login']);
 
 $router->get('logout', [AuthController::class, 'logout']);
 
+$router->get('forgot-password', [AuthController::class, 'showForgotPassword']);
+$router->post('forgot-password', [AuthController::class, 'forgotPassword']);
+
+$router->get('reset-password', [AuthController::class, 'showResetPassword']);
+$router->post('reset-password', [AuthController::class, 'resetPassword']);
+
 $router->get('auth/google', [AuthController::class, 'googleRedirect']);
 $router->get('auth/google/callback', [AuthController::class, 'googleCallback']);
 
