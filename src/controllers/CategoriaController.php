@@ -136,9 +136,4 @@ class CategoriaController extends BaseController
 
         $this->redirect('categorias');
     }
-    public function ver(): void
-    {
-        // Por ahora, como es maquetado, no necesitamos llamar al service
-        $this->render('categoria/ver');
-    }
 }

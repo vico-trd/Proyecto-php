@@ -33,7 +33,8 @@ class UserRepository implements RepositoryInterface
         return null;
     }
 
-    public function findById(int $id): ?User{
+    public function findById(int $id): ?User
+    {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $data = $stmt->fetch();
@@ -53,9 +54,10 @@ class UserRepository implements RepositoryInterface
 
 
 
-    public function findAll(): array{
-        $stmt= $this->db->query('SELECT * FROM users');
-        $users=[];
+    public function findAll(): array
+    {
+        $stmt = $this->db->query('SELECT * FROM users');
+        $users = [];
         while ($data = $stmt->fetch()) {
             $users[] = new User(
                 id: (int)$data['id'],
@@ -71,11 +73,11 @@ class UserRepository implements RepositoryInterface
 
     public function save(object $user): bool
     {
-        if(!$user instanceof User){
+        if (!$user instanceof User) {
             return false;
         }
 
-        if($user->id){
+        if ($user->id) {
             $stmt = $this->db->prepare('UPDATE users SET name = :name, email = :email, password = :password, role = :role WHERE id = :id');
             return $stmt->execute([
                 'name' => $user->name,
@@ -84,7 +86,7 @@ class UserRepository implements RepositoryInterface
                 'role' => $user->role,
                 'id' => $user->id
             ]);
-        }else{
+        } else {
             $stmt = $this->db->prepare('INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)');
             return $stmt->execute([
                 'name' => $user->name,
@@ -95,7 +97,8 @@ class UserRepository implements RepositoryInterface
         }
     }
 
-    public function delete(int $id):bool{
+    public function delete(int $id): bool
+    {
         $stmt = $this->db->prepare('DELETE FROM users WHERE id = :id');
         return $stmt->execute(['id' => $id]);
     }

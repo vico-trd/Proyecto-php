@@ -6,7 +6,7 @@
 
         <h2>Crear usuario</h2>
 
-        <form action="/Proyecto-php/public/admin/users/create" method="POST">
+        <form action="<?= BASE_URL ?>admin/users/create" method="POST">
             <div class="mb-3">
                 <label for="name" class="form-label">Nombre</label>
                 <input type="text" name="name" id="name" class="form-control <?= isset($errors['name']) ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($old['name'] ?? '') ?>">
