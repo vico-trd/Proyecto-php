@@ -63,8 +63,9 @@ class OrderRepository implements RepositoryInterface
             $stmt = $this->db->prepare('UPDATE orders SET user_id = :user_id, total = :total, status = :status WHERE id = :id');
             return $stmt->execute([
                 'user_id' => $order->user_id,
-                'total' => $order->total,
-                'status' => $order->status,
+                'total'   => $order->total,
+                'status'  => $order->status,
+                'id'      => $order->id,
             ]);
         } else {
             $stmt = $this->db->prepare('INSERT INTO orders (user_id, total, status) VALUES (:user_id, :total, :status)');

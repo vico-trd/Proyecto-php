@@ -83,7 +83,7 @@ class EmailService
         $this->mailer->addAddress($destinatarioEmail, $destinatarioNombre);
 
         $nombreEsc = htmlspecialchars($destinatarioNombre, ENT_QUOTES, 'UTF-8');
-
+        $baseUrl   = 'http://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . '/Proyecto-php/public/';
         $this->mailer->isHTML(true);
         $this->mailer->Subject = '¡Bienvenido/a a Clothing Store, ' . $destinatarioNombre . '!';
         $this->mailer->Body    = <<<HTML
@@ -106,14 +106,14 @@ class EmailService
                 <div class="body">
                     <p>Hola, <strong>{$nombreEsc}</strong>.</p>
                     <p>Tu cuenta ha sido creada correctamente. Ya puedes explorar nuestro catálogo y realizar tus primeras compras.</p>
-                    <a href="http://localhost/Proyecto-php/public/" class="btn">Ir a la tienda</a>
+                    <a href="{$baseUrl}" class="btn">Ir a la tienda</a>
                 </div>
                 <div class="footer">&copy; Clothing Store · Este correo se generó automáticamente.</div>
             </div>
         </body>
         </html>
         HTML;
-        $this->mailer->AltBody = "Hola, {$destinatarioNombre}.\n\nTu cuenta en Clothing Store ha sido creada correctamente.\nVisítanos en: http://localhost/Proyecto-php/public/";
+        $this->mailer->AltBody = "Hola, {$destinatarioNombre}.\n\nTu cuenta en Clothing Store ha sido creada correctamente.\nVisítanos en: {$baseUrl}";
 
         $this->mailer->send();
     }
