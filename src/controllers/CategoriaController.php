@@ -28,7 +28,7 @@ class CategoriaController extends BaseController
     {
         $this->requireAdmin();
         $categorias = $this->service->listar();
-        require __DIR__ . '/../views/categoria/index.php';
+        $this->render('categoria/index', compact('categorias'));
     }
 
     /**
@@ -41,7 +41,7 @@ class CategoriaController extends BaseController
         $old = $_SESSION['old'] ?? [];
         unset($_SESSION['errores'], $_SESSION['old']);
 
-        require __DIR__ . '/../views/categoria/crear.php';
+        $this->render('categoria/crear', compact('errores', 'old'));
     }
 
     /**
@@ -88,7 +88,7 @@ class CategoriaController extends BaseController
         $old = $_SESSION['old'] ?? [];
         unset($_SESSION['errores'], $_SESSION['old']);
 
-        require __DIR__ . '/../views/categoria/editar.php';
+        $this->render('categoria/editar', compact('categoria', 'errores', 'old'));
     }
 
     /**
@@ -139,6 +139,6 @@ class CategoriaController extends BaseController
     public function ver(): void
     {
         // Por ahora, como es maquetado, no necesitamos llamar al service
-        require __DIR__ . '/../views/categoria/ver.php';
+        $this->render('categoria/ver');
     }
 }

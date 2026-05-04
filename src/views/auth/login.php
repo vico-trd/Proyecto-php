@@ -9,7 +9,7 @@
         <form action="<?= BASE_URL ?>login" method="POST">
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" name="email" id="email" class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($old['email'] ?? '') ?>">
+                <input type="email" name="email" id="email" class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>" value="<?= htmlspecialchars($old['email'] ?? $remembered_email ?? '') ?>">
                 <?php if (isset($errors['email'])): ?>
                     <div class="invalid-feedback"><?= $errors['email'] ?></div>
                 <?php endif; ?>
@@ -24,6 +24,11 @@
                         <div class="invalid-feedback"><?= $errors['password'] ?></div>
                     <?php endif; ?>
                 </div>
+            </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="remember_me" id="remember_me" class="form-check-input" value="1" <?= !empty($remembered_email) ? 'checked' : '' ?>>
+                <label for="remember_me" class="form-check-label">Recuérdame</label>
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Entrar</button>

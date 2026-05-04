@@ -6,7 +6,6 @@ $pages    = $paginator->getPages();
 $prevUrl  = $paginator->getPrevUrl();
 $nextUrl  = $paginator->getNextUrl();
 ?>
-<?php include_once __DIR__ . '/../layout/header.php'; ?>
 
 <!-- Cabecera de categoría -->
 <div class="mb-4 pb-3 border-bottom">
@@ -108,5 +107,3 @@ $nextUrl  = $paginator->getNextUrl();
     <?php endif; ?>
 
 <?php endif; ?>
-
-<?php include_once __DIR__ . '/../layout/footer.php'; ?>

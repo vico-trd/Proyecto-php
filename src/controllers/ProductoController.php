@@ -27,7 +27,9 @@ class ProductoController extends BaseController
     }
 
     /**
-     * Esta función es la que busca el Router cuando pones /producto
+     * Muestra la ficha detalle de un producto (GET /producto/{id}).
+     *
+     * @param int $id  ID del producto
      */
     public function show(int $id): void
     {
@@ -38,11 +40,11 @@ class ProductoController extends BaseController
             return;
         }
 
-        require __DIR__ . '/../views/pages/producto.php';
+        $this->render('pages/producto', compact('producto'));
     }
 
 
-    
+    /** Muestra la tabla de gestión de productos (GET /productos/gestion). Solo admin. */
     public function gestion(): void
     {
         $this->requireAdmin();
@@ -55,9 +57,10 @@ class ProductoController extends BaseController
             $categoryMap[$categoria->id] = $categoria->name;
         }
 
-        require __DIR__ . '/../views/productos/gestion.php';
+        $this->render('productos/gestion', compact('productos', 'categorias', 'categoryMap'));
     }
 
+    /** Muestra el formulario de creación de producto (GET /productos/crear). Solo admin. */
     public function crear(): void
     {
         $this->requireAdmin();
@@ -67,9 +70,10 @@ class ProductoController extends BaseController
         $old = $_SESSION['old'] ?? [];
         unset($_SESSION['errores'], $_SESSION['old']);
 
-        require __DIR__ . '/../views/productos/crear.php';
+        $this->render('productos/crear', compact('categorias', 'errores', 'old'));
     }
 
+    /** Procesa la creación del producto (POST /productos/crear). Solo admin. */
     public function guardar(): void
     {
         $this->requireAdmin();
@@ -99,6 +103,11 @@ class ProductoController extends BaseController
         $this->redirect('productos/crear');
     }
 
+    /**
+     * Muestra el formulario de edición de un producto (GET /productos/editar/{id}). Solo admin.
+     *
+     * @param int $id  ID del producto a editar
+     */
     public function editar(int $id): void
     {
         $this->requireAdmin();
@@ -114,9 +123,14 @@ class ProductoController extends BaseController
         $old = $_SESSION['old'] ?? [];
         unset($_SESSION['errores'], $_SESSION['old']);
 
-        require __DIR__ . '/../views/productos/editar.php';
+        $this->render('productos/editar', compact('producto', 'categorias', 'errores', 'old'));
     }
 
+    /**
+     * Procesa la actualización de un producto (POST /productos/editar/{id}). Solo admin.
+     *
+     * @param int $id  ID del producto a actualizar
+     */
     public function actualizar(int $id): void
     {
         $this->requireAdmin();
@@ -146,6 +160,11 @@ class ProductoController extends BaseController
         $this->redirect('productos/editar/' . $id);
     }
 
+    /**
+     * Elimina un producto (POST /productos/eliminar/{id}). Solo admin.
+     *
+     * @param int $id  ID del producto a eliminar
+     */
     public function eliminar(int $id): void
     {
         $this->requireAdmin();
@@ -161,6 +180,12 @@ class ProductoController extends BaseController
         $this->redirect('productos/gestion');
     }
 
+    /**
+     * Muestra el listado de productos de una categoría con paginación
+     * (GET /categoria/{categoryId}/productos).
+     *
+     * @param int $categoryId  ID de la categoría
+     */
     public function porCategoria(int $categoryId): void
     {
         $categoryId = (int)$categoryId;
@@ -178,6 +203,6 @@ class ProductoController extends BaseController
         $products = $result['products'];
         $paginator = $result['paginator'];
 
-        require __DIR__ . '/../views/productos/categoria.php';
+        $this->render('productos/categoria', compact('category', 'products', 'paginator'));
     }
 }

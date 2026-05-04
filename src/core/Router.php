@@ -6,11 +6,25 @@ class Router
 {
 	private array $routes = [];
 
+	/**
+	 * Registra una ruta GET.
+	 *
+	 * @param string $path    Patrón de ruta (ej: 'producto/{id}')
+	 * @param array  $action  [NombreClaseController::class, 'nombreMétodo']
+	 * @return void
+	 */
 	public function get(string $path, array $action): void
 	{
 		$this->addRoute('GET', $path, $action);
 	}
 
+	/**
+	 * Registra una ruta POST.
+	 *
+	 * @param string $path    Patrón de ruta (ej: 'categorias/crear')
+	 * @param array  $action  [NombreClaseController::class, 'nombreMétodo']
+	 * @return void
+	 */
 	public function post(string $path, array $action): void
 	{
 		$this->addRoute('POST', $path, $action);
@@ -26,6 +40,13 @@ class Router
 		];
 	}
 
+	/**
+	 * Resuelve la petición actual buscando la ruta que coincida con
+	 * el método HTTP y la URL, e instancia el controlador correspondiente.
+	 * Si no hay coincidencia redirige a la página 404.
+	 *
+	 * @return void
+	 */
 	public function dispatch(): void
 	{
 		$url = trim($_GET['url'] ?? '', '/');
@@ -51,6 +72,13 @@ class Router
 		echo '404 - Pagina no encontrada';
 	}
 
+	/**
+	 * Convierte un patrón de ruta con placeholders a una expresión regular.
+	 * Por ejemplo: 'producto/{id}' → '#^producto/([^/]+)$#'
+	 *
+	 * @param string $path  Patrón de ruta con placeholders entre llaves
+	 * @return string       Expresión regular lista para usar con preg_match()
+	 */
 	private function convertToRegex(string $path): string
 	{
 		$pattern = preg_replace('/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/', '([^/]+)', $path);

@@ -37,6 +37,12 @@ class Database
         }
     }
 
+    /**
+     * Devuelve la única instancia de la clase (Singleton).
+     * Si no existe, la crea conectando a la base de datos.
+     *
+     * @return self
+     */
     public static function getInstance(): Database
     {
         if (self::$instance === null) {
@@ -46,6 +52,11 @@ class Database
         return self::$instance;
     }
 
+    /**
+     * Devuelve la conexión PDO activa.
+     *
+     * @return PDO
+     */
     public function getConnection(): PDO
     {
         return $this->connection;

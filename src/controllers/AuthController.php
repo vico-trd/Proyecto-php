@@ -27,11 +27,13 @@ class AuthController extends BaseController
         $this->passwordResetRepository = new PasswordResetRepository();
     }
 
+    /** Muestra el formulario de registro (GET /register). */
     public function showRegister(): void
     {
         $this->render('auth/register');
     }
 
+    /** Procesa el formulario de registro (POST /register). */
     public function register(): void
     {
         $request = new UserRequest($_POST);
@@ -64,11 +66,18 @@ class AuthController extends BaseController
         $this->redirect('login');
     }
 
+    /** Muestra el formulario de inicio de sesión (GET /login). */
     public function showLogin(): void
     {
-        $this->render('auth/login');
+        // Pre-rellena el email si el usuario marcó "Recuérdame" anteriormente
+        $rememberedEmail = isset($_COOKIE['remember_email'])
+            ? htmlspecialchars($_COOKIE['remember_email'], ENT_QUOTES, 'UTF-8')
+            : '';
+
+        $this->render('auth/login', ['remembered_email' => $rememberedEmail]);
     }
 
+    /** Procesa el formulario de inicio de sesión (POST /login). */
     public function login(): void
     {
         $request = new LoginRequest($_POST);
@@ -99,6 +108,20 @@ class AuthController extends BaseController
             'role' => $user->role,
         ];
 
+        // --- COOKIE "RECUÉRDAME" ---
+        if (!empty($_POST['remember_me'])) {
+            // Guarda el email 30 días en una cookie segura (httponly)
+            setcookie('remember_email', $user->email, [
+                'expires'  => time() + (30 * 24 * 60 * 60),
+                'path'     => '/',
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
+        } else {
+            // Si no marcó el checkbox, elimina la cookie anterior si existía
+            setcookie('remember_email', '', ['expires' => time() - 3600, 'path' => '/']);
+        }
+
         // --- LÓGICA DE PERSISTENCIA DEL CARRITO ---
         $oldSessionId = $_SESSION['carrito_temporal_id'] ?? null;
 
@@ -121,6 +144,7 @@ class AuthController extends BaseController
         $this->redirect('');
     }
 
+    /** Destruye la sesión activa y redirige al login (GET /logout). */
     public function logout(): void
     {
         session_unset();
@@ -128,6 +152,7 @@ class AuthController extends BaseController
         $this->redirect('login');
     }
 
+    /** Muestra el formulario de creación de usuarios por parte del admin (GET /admin/users/create). */
     public function showCreateUser(): void
     {
         if (!$this->isAdmin()) {
@@ -138,6 +163,7 @@ class AuthController extends BaseController
         $this->render('admin/create-user');
     }
 
+    /** Procesa la creación de un nuevo usuario por parte del admin (POST /admin/users/create). */
     public function createUser(): void
     {
         if (!$this->isAdmin()) {
@@ -194,11 +220,16 @@ class AuthController extends BaseController
 
     // ─── Recuperación de contraseña ────────────────────────────────────────────
 
+    /** Muestra el formulario de recuperación de contraseña (GET /forgot-password). */
     public function showForgotPassword(): void
     {
         $this->render('auth/forgot-password');
     }
 
+    /**
+     * Procesa la solicitud de recuperación: genera un token y envía el email (POST /forgot-password).
+     * La respuesta es siempre genérica para no revelar si el email existe.
+     */
     public function forgotPassword(): void
     {
         $email = trim($_POST['email'] ?? '');
@@ -235,6 +266,10 @@ class AuthController extends BaseController
         ]);
     }
 
+    /**
+     * Muestra el formulario para establecer nueva contraseña (GET /reset-password?token=...).
+     * Valida que el token exista y no haya expirado antes de renderizar.
+     */
     public function showResetPassword(): void
     {
         $token = $_GET['token'] ?? '';
@@ -256,6 +291,10 @@ class AuthController extends BaseController
         $this->render('auth/reset-password', ['token' => htmlspecialchars($token, ENT_QUOTES, 'UTF-8')]);
     }
 
+    /**
+     * Procesa el cambio de contraseña (POST /reset-password).
+     * Valida el token, actualiza el hash y elimina el token consumido.
+     */
     public function resetPassword(): void
     {
         $token    = $_POST['token']            ?? '';

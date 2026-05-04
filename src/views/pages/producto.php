@@ -1,7 +1,5 @@
 <?php /** @var object $producto */ ?>
 
-<?php include_once __DIR__ . '/../layout/header.php'; ?>
-
 <main class="container" style="padding: 50px 20px;">
     <div style="display: flex; gap: 40px; flex-wrap: wrap;">
         <div style="flex: 1; min-width: 300px;">
@@ -36,5 +34,3 @@
         </div>
     </div>
 </main>
-
-<?php include_once __DIR__ . '/../layout/footer.php'; ?>

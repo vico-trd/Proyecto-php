@@ -2,7 +2,6 @@
 /** @var array $errores */
 /** @var array $old */
 ?>
-<?php require __DIR__ . '/../layout/header.php'; ?>
 
 <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
@@ -38,5 +37,3 @@
         </div>
     </div>
 </div>
-
-<?php require __DIR__ . '/../layout/footer.php'; ?>
