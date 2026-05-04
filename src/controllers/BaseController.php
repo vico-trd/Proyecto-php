@@ -4,6 +4,14 @@ namespace App\Controllers;
 
 class BaseController
 {
+    /**
+     * Renderiza una vista envolviéndola entre header y footer.
+     * Extrae $data como variables locales accesibles en la vista.
+     *
+     * @param string $view  Ruta relativa de la vista sin extensión (ej: 'auth/login')
+     * @param array  $data  Variables que se pasarán a la vista
+     * @return void
+     */
     protected function render(string $view, array $data = []): void
     {
         extract($data);
@@ -26,6 +34,12 @@ class BaseController
         require __DIR__ . '/../views/layout/footer.php';
     }
 
+    /**
+     * Redirige a una URL relativa dentro del proyecto y termina la ejecución.
+     *
+     * @param string $url  Segmento de ruta relativo (ej: 'login', 'productos/gestion')
+     * @return void
+     */
     protected function redirect(string $url): void
     {
         header("Location: /Proyecto-php/public/$url");
