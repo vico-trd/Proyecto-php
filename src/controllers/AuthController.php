@@ -66,7 +66,12 @@ class AuthController extends BaseController
 
     public function showLogin(): void
     {
-        $this->render('auth/login');
+        // Pre-rellena el email si el usuario marcó "Recuérdame" anteriormente
+        $rememberedEmail = isset($_COOKIE['remember_email'])
+            ? htmlspecialchars($_COOKIE['remember_email'], ENT_QUOTES, 'UTF-8')
+            : '';
+
+        $this->render('auth/login', ['remembered_email' => $rememberedEmail]);
     }
 
     public function login(): void
@@ -99,6 +104,20 @@ class AuthController extends BaseController
             'role' => $user->role,
         ];
 
+        // --- COOKIE "RECUÉRDAME" ---
+        if (!empty($_POST['remember_me'])) {
+            // Guarda el email 30 días en una cookie segura (httponly)
+            setcookie('remember_email', $user->email, [
+                'expires'  => time() + (30 * 24 * 60 * 60),
+                'path'     => '/',
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
+        } else {
+            // Si no marcó el checkbox, elimina la cookie anterior si existía
+            setcookie('remember_email', '', ['expires' => time() - 3600, 'path' => '/']);
+        }
+
         // --- LÓGICA DE PERSISTENCIA DEL CARRITO ---
         $oldSessionId = $_SESSION['carrito_temporal_id'] ?? null;
 
@@ -123,6 +142,9 @@ class AuthController extends BaseController
 
     public function logout(): void
     {
+        // Elimina la cookie de "Recuérdame" al cerrar sesión
+        setcookie('remember_email', '', ['expires' => time() - 3600, 'path' => '/']);
+
         session_unset();
         session_destroy();
         $this->redirect('login');
