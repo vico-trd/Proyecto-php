@@ -142,9 +142,6 @@ class AuthController extends BaseController
 
     public function logout(): void
     {
-        // Elimina la cookie de "Recuérdame" al cerrar sesión
-        setcookie('remember_email', '', ['expires' => time() - 3600, 'path' => '/']);
-
         session_unset();
         session_destroy();
         $this->redirect('login');
