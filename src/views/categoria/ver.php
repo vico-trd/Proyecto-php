@@ -1,8 +1,3 @@
-<?php 
-// 1. Incluimos el cabecero desde la carpeta layout
-include_once __DIR__ . '/../layout/header.php'; 
-?>
-
 <main class="container" style="padding: 20px;">
     <header class="category-header" style="margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
         <h1>Categoría: <span style="color: #e74c3c;">Nombre de la Categoría</span></h1>
@@ -35,7 +30,3 @@ include_once __DIR__ . '/../layout/header.php';
         </section>
 </main>
 
-<?php 
-// 2. Incluimos el pie de página
-include_once __DIR__ . '/../layout/footer.php'; 
-?>

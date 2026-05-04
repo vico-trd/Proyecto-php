@@ -40,7 +40,7 @@ class ProductoController extends BaseController
             return;
         }
 
-        require __DIR__ . '/../views/pages/producto.php';
+        $this->render('pages/producto', compact('producto'));
     }
 
 
@@ -57,7 +57,7 @@ class ProductoController extends BaseController
             $categoryMap[$categoria->id] = $categoria->name;
         }
 
-        require __DIR__ . '/../views/productos/gestion.php';
+        $this->render('productos/gestion', compact('productos', 'categorias', 'categoryMap'));
     }
 
     /** Muestra el formulario de creación de producto (GET /productos/crear). Solo admin. */
@@ -70,7 +70,7 @@ class ProductoController extends BaseController
         $old = $_SESSION['old'] ?? [];
         unset($_SESSION['errores'], $_SESSION['old']);
 
-        require __DIR__ . '/../views/productos/crear.php';
+        $this->render('productos/crear', compact('categorias', 'errores', 'old'));
     }
 
     /** Procesa la creación del producto (POST /productos/crear). Solo admin. */
@@ -123,7 +123,7 @@ class ProductoController extends BaseController
         $old = $_SESSION['old'] ?? [];
         unset($_SESSION['errores'], $_SESSION['old']);
 
-        require __DIR__ . '/../views/productos/editar.php';
+        $this->render('productos/editar', compact('producto', 'categorias', 'errores', 'old'));
     }
 
     /**
@@ -203,6 +203,6 @@ class ProductoController extends BaseController
         $products = $result['products'];
         $paginator = $result['paginator'];
 
-        require __DIR__ . '/../views/productos/categoria.php';
+        $this->render('productos/categoria', compact('category', 'products', 'paginator'));
     }
 }
