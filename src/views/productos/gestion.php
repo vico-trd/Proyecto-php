@@ -59,7 +59,7 @@
                         <td class="text-muted"><?= (int)$producto->id ?></td>
                         <td>
                             <?php if (!empty($producto->image)): ?>
-                                <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>"
+                                <img src="<?= UPLOADS_URL . htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>"
                                     alt="Imagen"
                                     class="rounded" style="width:52px;height:52px;object-fit:cover;">
                             <?php else: ?>

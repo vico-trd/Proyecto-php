@@ -12,7 +12,9 @@ $dotenv->load();
 session_start();
 
 // URL base del proyecto (ajustar si cambia la ubicación)
-define('BASE_URL', '/Proyecto-php/public/index.php?url=');
+define('BASE_URL',    '/Proyecto-php/public/index.php?url=');
+define('BASE_PATH',   '/Proyecto-php/public/');
+define('UPLOADS_URL', '/Proyecto-php/public/uploads/images/');
 
 // Crear el router y registrar rutas
 $router = new Router();

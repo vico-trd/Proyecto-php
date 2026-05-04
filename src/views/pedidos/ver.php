@@ -28,7 +28,7 @@
                                 <tr>
                                     <td class="ps-3">
                                         <?php if (!empty($item->product_image)): ?>
-                                            <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($item->product_image) ?>"
+                                            <img src="<?= UPLOADS_URL . htmlspecialchars($item->product_image) ?>"
                                                  alt="<?= htmlspecialchars($item->product_name) ?>"
                                                  width="50" height="50"
                                                  class="rounded me-2 object-fit-cover">

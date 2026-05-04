@@ -86,7 +86,7 @@
                             <?php endif; ?>
                             <?php if (!empty($producto->image)): ?>
                                 <div class="mt-2 d-flex align-items-center gap-2">
-                                    <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>"
+                                    <img src="<?= UPLOADS_URL . htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>"
                                          alt="Imagen actual" class="rounded" style="width:56px;height:56px;object-fit:cover;">
                                     <span class="form-text">Imagen actual (déjalo vacío para mantenerla)</span>
                                 </div>

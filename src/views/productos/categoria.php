@@ -35,7 +35,7 @@ $nextUrl  = $paginator->getNextUrl();
                 <div class="card h-100 shadow-sm border-0">
                     <a href="<?= BASE_URL ?>producto/<?= $product->id ?>">
                         <?php if (!empty($product->image)): ?>
-                            <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($product->image, ENT_QUOTES, 'UTF-8') ?>"
+                            <img src="<?= UPLOADS_URL . htmlspecialchars($product->image, ENT_QUOTES, 'UTF-8') ?>"
                                  alt="<?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?>"
                                  class="card-img-top" style="height:220px;object-fit:cover;">
                         <?php else: ?>

@@ -35,7 +35,7 @@
         <div class="producto-card">
             <a href="<?= BASE_URL ?>producto/<?= $producto->id ?>">
                  <?php if (!empty($producto->image)): ?>
-                            <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>"
+                            <img src="<?= UPLOADS_URL . htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>"
                                  alt="<?= htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') ?>"
                                  class="card-img-top" style="height:220px;object-fit:cover;">
                         <?php else: ?>

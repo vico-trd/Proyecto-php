@@ -60,7 +60,7 @@ foreach ($productos as $p) {
                                     <div class="d-flex align-items-center gap-3">
                                         <?php if (!empty($p->image)): ?>
                                             <img
-                                                src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($p->image, ENT_QUOTES, 'UTF-8') ?>"
+                                                src="<?= UPLOADS_URL . htmlspecialchars($p->image, ENT_QUOTES, 'UTF-8') ?>"
                                                 alt="<?= htmlspecialchars($p->name, ENT_QUOTES, 'UTF-8') ?>"
                                                 style="width:60px;height:60px;object-fit:cover;border-radius:6px;">
                                         <?php else: ?>

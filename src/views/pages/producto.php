@@ -4,7 +4,7 @@
     <div style="display: flex; gap: 40px; flex-wrap: wrap;">
         <div style="flex: 1; min-width: 300px;">
              <?php if (isset($producto->image) && !empty($producto->image)): ?>
-                             <img src="/Proyecto-php/public/uploads/images/<?= htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>" alt="Producto" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                             <img src="<?= UPLOADS_URL . htmlspecialchars($producto->image, ENT_QUOTES, 'UTF-8') ?>" alt="Producto" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
 
             <?php else: ?>
                             <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:220px;">

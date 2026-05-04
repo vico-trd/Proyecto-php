@@ -42,7 +42,7 @@ class BaseController
      */
     protected function redirect(string $url): void
     {
-        header("Location: /Proyecto-php/public/$url");
+        header('Location: ' . BASE_PATH . $url);
         exit;
     }
 }
