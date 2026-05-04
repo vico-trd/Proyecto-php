@@ -27,7 +27,13 @@ class PedidoController extends BaseController
         }
 
         $userId  = (int)$_SESSION['user']['id'];
-        $pedidos = $this->orderRepository->findAllByUserId($userId);
+        $isAdmin = isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin';
+
+        if ($isAdmin) {
+            $pedidos = $this->orderRepository->findAllConfirmed();
+        } else {
+            $pedidos = $this->orderRepository->findAllByUserId($userId);
+        }
 
         $this->render('pedidos/index', compact('pedidos'));
     }
@@ -44,13 +50,18 @@ class PedidoController extends BaseController
 
         $pedidoId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
         $userId   = (int)$_SESSION['user']['id'];
+        $isAdmin  = isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin';
 
         if ($pedidoId <= 0) {
             $this->redirect('mis-pedidos');
             return;
         }
 
-        $pedido = $this->orderRepository->findByIdAndUserId($pedidoId, $userId);
+        if ($isAdmin) {
+            $pedido = $this->orderRepository->findById($pedidoId);
+        } else {
+            $pedido = $this->orderRepository->findByIdAndUserId($pedidoId, $userId);
+        }
 
         if (!$pedido) {
             $this->redirect('mis-pedidos');
@@ -60,5 +71,25 @@ class PedidoController extends BaseController
         $items = $this->orderItemRepository->findDetailedByOrderId($pedido->id);
 
         $this->render('pedidos/ver', compact('pedido', 'items'));
+    }
+
+    /**
+     * Actualiza el estado de un pedido (Solo Admin)
+     */
+    public function actualizarEstado(): void
+    {
+        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+            $this->redirect('mis-pedidos');
+            return;
+        }
+
+        $pedidoId = isset($_POST['pedido_id']) ? (int)$_POST['pedido_id'] : 0;
+        $status = isset($_POST['status']) ? trim($_POST['status']) : '';
+
+        if ($pedidoId > 0 && !empty($status)) {
+            $this->orderRepository->updateStatus($pedidoId, $status);
+        }
+
+        $this->redirect('mis-pedidos');
     }
 }

@@ -169,6 +169,33 @@ public function createPendingOrder(int $userId): int
     }
 
     /**
+     * Retorna todos los pedidos confirmados del sistema (DESC por fecha).
+     */
+    public function findAllConfirmed(): array
+    {
+        $stmt = $this->db->query(
+            "SELECT * FROM orders WHERE status != 'pending' ORDER BY created_at DESC"
+        );
+        $orders = [];
+        while ($data = $stmt->fetch()) {
+            $orders[] = new Order(
+                id: (int)$data['id'],
+                user_id: (int)$data['user_id'],
+                total: (float)$data['total'],
+                status: $data['status'],
+                created_at: $data['created_at'] ?? null
+            );
+        }
+        return $orders;
+    }
+
+    public function updateStatus(int $orderId, string $status): bool
+    {
+        $stmt = $this->db->prepare('UPDATE orders SET status = :status WHERE id = :id');
+        return $stmt->execute(['status' => $status, 'id' => $orderId]);
+    }
+
+    /**
      * Retorna un pedido por ID solo si pertenece al usuario (seguridad).
      */
     public function findByIdAndUserId(int $orderId, int $userId): ?Order

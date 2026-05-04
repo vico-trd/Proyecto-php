@@ -32,7 +32,6 @@ $router->post('carrito/decrementar', [\App\Controllers\CarritoController::class,
 $router->post('carrito/eliminar', [\App\Controllers\CarritoController::class, 'eliminar']);
 $router->post('carrito/vaciar', [\App\Controllers\CarritoController::class, 'vaciar']);
 
-
 // Rutas para el maquetado que estamos creando
 $router->get('checkout', [\App\Controllers\CheckoutController::class, 'index']);
 $router->post('checkout/procesar', [\App\Controllers\CheckoutController::class, 'procesar']);
@@ -43,6 +42,7 @@ $router->get('confirmacion', [\App\Controllers\CheckoutController::class, 'confi
 $router->get('producto/{id}', [\App\Controllers\ProductoController::class, 'show']);
 $router->get('mis-pedidos', [\App\Controllers\PedidoController::class, 'index']);
 $router->get('mis-pedidos/ver', [\App\Controllers\PedidoController::class, 'ver']);
+$router->post('mis-pedidos/actualizar', [\App\Controllers\PedidoController::class, 'actualizarEstado']);
 
 // --- Rutas de Categorías ---
 $router->get('categorias', [\App\Controllers\CategoriaController::class, 'index']);

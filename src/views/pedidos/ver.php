@@ -93,6 +93,23 @@
                             <?= number_format($pedido->total, 2, ',', '.') ?> €
                         </dd>
                     </dl>
+                    
+                    <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
+                        <hr>
+                        <h6 class="fw-bold text-uppercase fs-7 text-muted mb-3">Actualizar Estado </h6>
+                        <form action="<?= BASE_URL ?>mis-pedidos/actualizar" method="POST">
+                            <input type="hidden" name="pedido_id" value="<?= $pedido->id ?>">
+                            <div class="mb-3">
+                                <select name="status" class="form-select form-select-sm">
+                                    <option value="confirmado" <?= $pedido->status === 'confirmado' ? 'selected' : '' ?>>Confirmado</option>
+                                    <option value="enviado" <?= $pedido->status === 'enviado' ? 'selected' : '' ?>>Enviado</option>
+                                    <option value="entregado" <?= $pedido->status === 'entregado' ? 'selected' : '' ?>>Entregado</option>
+                                    <option value="cancelado" <?= $pedido->status === 'cancelado' ? 'selected' : '' ?>>Cancelado</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-dark w-100">Actualizar Estado</button>
+                        </form>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
