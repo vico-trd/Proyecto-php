@@ -8,9 +8,7 @@ use App\Core\Database;
 /**
  * No implementa RepositoryInterface porque esa interfaz define CRUD por ID
  * entero (findById, save, delete), semántica incompatible con tokens de un
- * solo uso identificados por string. Esta clase sigue el principio de
- * Segregación de Interfaces (ISP-SOLID): es mejor una interfaz específica
- * que forzar implementaciones sin sentido.
+ * solo uso identificados por string.
  */
 
 
