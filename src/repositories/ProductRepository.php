@@ -70,6 +70,8 @@ class ProductRepository implements RepositoryInterface
             'SELECT * FROM products WHERE category_id = :category_id ORDER BY id DESC LIMIT :limit OFFSET :offset'
         );
 
+        //usamos bindvalue en vez de execute porque limit y offset necesitan ser enteros
+        // y si lo hacemos con execute el sql lo ignora
         $stmt->bindValue(':category_id', $categoryId, PDO::PARAM_INT);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -121,6 +123,9 @@ class ProductRepository implements RepositoryInterface
         }
     }
 
+
+    //antes de borrar un producto comprueba si algun pedido lo tiene
+    //y si lo tiene no lo puede borrar
     public function countOrderItemsByProduct(int $productId): int
     {
         $stmt = $this->db->prepare('SELECT COUNT(*) AS total FROM order_items WHERE product_id = :product_id');
@@ -147,7 +152,10 @@ class ProductRepository implements RepositoryInterface
         }
 
         // Construimos placeholders para la consulta IN
+        //EL ARRAY FILL CREA UN ARRAY DE INTERROGANTES
+        //IMPLODE LOS UNE CON COMAS
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        //TANTAS INTERROGACIONES COMO PRODUCTOS HAYA
         $stmt = $this->db->prepare("SELECT * FROM products WHERE id IN ($placeholders)");
         $stmt->execute(array_values($ids));
 

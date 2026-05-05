@@ -87,6 +87,11 @@ class OrderRepository implements RepositoryInterface
      * Busca el pedido 'pending' más reciente de un usuario.
      */
   // 1. BUSCAR POR USUARIO (Este es el que te daba el error Fatal)
+
+  // este metodo se usa en el carrito lo unico que hace es actualizar
+  // los orders del carrito segun el id del producto
+  // cada vez q añadimos o quitamos un producto se actualiza
+  // este metodo se llama mucho
 public function findPendingByUserId(int $userId): ?Order
 {
     $stmt = $this->db->prepare(
@@ -129,6 +134,9 @@ public function findPendingBySessionId(string $sessionId): ?Order
 }
 
 // 3. CREAR PEDIDO
+
+//devuelve el id recien insertado, que lo necestia carrito controller para poder
+//añadir items
 public function createPendingOrder(int $userId): int
 {
     $stmt = $this->db->prepare(
@@ -223,6 +231,8 @@ public function createPendingOrder(int $userId): int
     public function finalizarPedido(int $orderId, array $items): bool
 {
     try {
+        //esto lo q hace es guatdar los cambios en la conexion de forma temporal
+        // para despues poder actualizar el stock
         $this->db->beginTransaction();
 
         // 1. Cambiar estado del pedido
@@ -238,10 +248,12 @@ public function createPendingOrder(int $userId): int
                 'product_id' => $productId
             ]);
         }
-
+// el commit es el que hace que todos los cambios ya se hagan de forma definitiva
         $this->db->commit();
         return true;
     } catch (\Exception $e) {
+        // el rollback y borrar todo lo q hice en el begintransaction
+        //y volver a empezar
         $this->db->rollBack();
         // Opcional: loguear el error $e->getMessage();
         return false;

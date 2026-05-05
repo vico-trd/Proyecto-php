@@ -8,6 +8,8 @@ use App\Repositories\CategoryRepository;
 class CategoriaService
 {
     private CategoryRepository $repository;
+//todos los servicios crean sus repositorios en el constructor
+//a partir de aqui ya pueden utilizarlos
 
     public function __construct()
     {

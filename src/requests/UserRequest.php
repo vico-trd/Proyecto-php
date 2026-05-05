@@ -56,6 +56,7 @@ class UserRequest
             $this->errors['password'] = 'La contraseña debe tener al menos 8 caracteres.';
         } elseif (strlen($this->data['password']) > 50) {
             $this->errors['password'] = 'La contraseña no puede superar los 50 caracteres.';
+            //comprueba q tenga al menos una ltra, al menos un numeros, y un caracter raro
         } elseif (!preg_match('/[A-Za-z]/', $this->data['password']) || !preg_match('/\d/', $this->data['password']) || !preg_match('/[^A-Za-z\d]/', $this->data['password'])) {
             $this->errors['password'] = 'La contraseña debe incluir letras, numeros y al menos un simbolo.';
         }

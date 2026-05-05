@@ -34,7 +34,8 @@ class PedidoController extends BaseController
         } else {
             $pedidos = $this->orderRepository->findAllByUserId($userId);
         }
-
+        // si es admin ve todos y si es usuario normal, ve solo los suyos con compact, que es
+        // lo mismo que ['pedidos'=>$pedidos]
         $this->render('pedidos/index', compact('pedidos'));
     }
 
@@ -59,6 +60,7 @@ class PedidoController extends BaseController
 
         if ($isAdmin) {
             $pedido = $this->orderRepository->findById($pedidoId);
+            //si es normal usa el id y ademas comprueba q el pedido pertenece a ese usuarios
         } else {
             $pedido = $this->orderRepository->findByIdAndUserId($pedidoId, $userId);
         }

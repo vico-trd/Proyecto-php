@@ -6,7 +6,8 @@ use PDO;
 use PDOException;
 
 class Database
-{
+{   
+    //pertenece a la clase e inicia con null porque al principio no hay ninguna conexion
     private static ?Database $instance = null;
     private PDO $connection;
 
@@ -20,11 +21,14 @@ class Database
         $pass = $_ENV['DB_PASS'] ?? ''; // XAMPP por defecto no tiene contraseña
         $charset = 'utf8mb4';
 
+        //string de conexion para saber a q base de datos conectarse
         $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=$charset";
         
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            //para cada consulta hace un array asociativo
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            //usa prepares reales no emulados por php, mas seguro q sql
             PDO::ATTR_EMULATE_PREPARES   => false,
         ];
 
@@ -45,6 +49,7 @@ class Database
      */
     public static function getInstance(): Database
     {
+        //crea un objeto database nuevo y lo devuelve
         if (self::$instance === null) {
             self::$instance = new Database();
         }
@@ -57,10 +62,12 @@ class Database
      *
      * @return PDO
      */
+
+    //para sacar el PDO
     public function getConnection(): PDO
     {
         return $this->connection;
     }
-
+    //eso hace que nadie pueda romper el singleton, clonar la base
     private function __clone() {}
 }

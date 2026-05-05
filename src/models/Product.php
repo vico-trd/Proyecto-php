@@ -3,7 +3,7 @@ namespace App\Models;
 
 class Product
 {
-    public ?int $id;
+    public ?int $id; //se lo asigna la base de datos al crearlo
     public string $name;
     public int $category_id;
     public string $description;
@@ -17,7 +17,7 @@ class Product
         string $description,
         float $price,
         int $stock,
-        string $image = '',
+        string $image = '', //porque alguno podria no tener imagen
         ?int $id = null
     ) {
         $this->id = $id;

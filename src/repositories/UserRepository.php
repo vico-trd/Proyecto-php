@@ -11,11 +11,13 @@ class UserRepository implements RepositoryInterface
 
     public function __construct()
     {
+        //obtiene la conexion con pdo para hacer consultas
         $this->db = Database::getInstance()->getConnection();
     }
 
     public function findByEmail(string $email): ?User
-    {
+    {   
+        //el prepare evita SQL INJECTION
         $stmt = $this->db->prepare('SELECT * FROM users WHERE email = :email');
         $stmt->execute(['email' => $email]);
         $data = $stmt->fetch();
@@ -116,6 +118,7 @@ class UserRepository implements RepositoryInterface
         $stmt->execute([
             'name'     => $name,
             'email'    => $email,
+            //CONTRASEÑA ALEATORIO PQ GOOGLE NO NECESITA CONTRASEÑA PERO ES OBLIGATORIA EN LA TABLA
             'password' => password_hash(bin2hex(random_bytes(32)), PASSWORD_BCRYPT),
             'role'     => 'user',
         ]);

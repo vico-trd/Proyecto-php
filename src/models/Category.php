@@ -4,7 +4,7 @@ namespace App\Models;
 
 class Category
 {
-    public ?int $id;
+    public ?int $id; // lo mismo lo asigna la base de datos
     public string $name;
     public string $description;
 
@@ -12,7 +12,7 @@ class Category
     {
         $this->id = $id;
         $this->name = $name;
-        $this->description = $description;
+        $this->description = $description; //es opcional
     }
 }
 

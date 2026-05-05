@@ -20,7 +20,7 @@ class HomeController extends BaseController
     {
         $categorias = $this->categoriaService->listar();
         $productos  = array_slice($this->productoService->listar(), 0, 8);
-
+// pasa ambas cosas a la vista home con render
         $this->render('home', [
             'categorias' => $categorias,
             'productos'  => $productos,

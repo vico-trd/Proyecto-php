@@ -123,6 +123,9 @@ class OrderItemRepository implements RepositoryInterface
     /**
      * Retorna los items de un pedido con datos del producto (para la vista de detalle).
      */
+    // en una consulta coge los detalles del item(cantidad, precio) 
+    // y los del producto(nombre, imagen)
+    // se usa en la vista del detalle producto
     public function findDetailedByOrderId(int $orderId): array
     {
         $sql = "SELECT oi.id, oi.quantity, oi.price,
@@ -136,6 +139,8 @@ class OrderItemRepository implements RepositoryInterface
     }
 
     // En OrderItemRepository.php
+    // esto lo q hace es guardar el carrito cuando se ha logueado el invitado, actualiza el usuario
+    // y pone el session_id a null
 public function migrarCarrito(int $userId, string $sessionId): void
 {
     // 1. Buscamos si el invitado tenía una orden pendiente asociada a su sesión

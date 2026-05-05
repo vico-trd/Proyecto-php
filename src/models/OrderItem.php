@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+//REPRESENTA UNA LINEA DE PEDIDO
 class OrderItem{
 
 
@@ -8,7 +9,7 @@ class OrderItem{
     public int $order_id;
     public int $product_id;
     public int $quantity;
-    public float $price;
+    public float $price; //el precio actual del producto, si mañana se actualiza, no se cambia
 
     public function __construct(int $id, int $order_id, int $product_id, int $quantity, float $price){
         $this->id=$id;

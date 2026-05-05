@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+//REPRESENTA UNA FILA DE LA TABLA USERS, el campo role, solo tiene dos valores 'user o admin'
 class User{
     public int $id ;
     public string $name;

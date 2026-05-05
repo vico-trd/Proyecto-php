@@ -23,6 +23,13 @@ class EmailService
         $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $this->mailer->Port       = (int)($_ENV['SMTP_PORT'] ?? 2525);
         $this->mailer->CharSet    = 'UTF-8';
+        $this->mailer->SMTPOptions = [
+    'ssl' => [
+        'verify_peer'       => false,
+        'verify_peer_name'  => false,
+        'allow_self_signed' => true,
+    ]
+];
 
         $fromEmail = $_ENV['SMTP_FROM_EMAIL'] ?? 'noreply@clothingstore.com';
         $fromName  = $_ENV['SMTP_FROM_NAME']  ?? 'Clothing Store';

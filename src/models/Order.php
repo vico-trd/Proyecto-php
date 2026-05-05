@@ -4,10 +4,10 @@ namespace App\Models;
 class Order
 {
     public int $id;
-    public ?int $user_id;
+    public ?int $user_id; //ES ASI PORQUE UN PEDIDO PUEDE PERTENECER A UN USUARIO SIN CUENTA(INVITADO)
     public float $total;
     public string $status;
-    public ?string $created_at;
+    public ?string $created_at; //la pone la base de datos
 
     public function __construct(
         int $id,

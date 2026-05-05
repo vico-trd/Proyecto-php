@@ -58,6 +58,7 @@ class ProductoService
         $offset = ($currentPage - 1) * $itemsPerPage;
         $products = $this->productRepository->findByCategoryPaginated($categoryId, $itemsPerPage, $offset);
 
+        //usa el metodo paginator para paginar los productos en las categorias
         $urlPattern = BASE_URL . 'categoria/' . $categoryId . '/productos&page=(:num)';
         $paginator = new Paginator($totalItems, $itemsPerPage, $currentPage, $urlPattern);
 
@@ -106,6 +107,8 @@ class ProductoService
             return 'La categoria seleccionada no existe.';
         }
 
+        //se pasa en el segundo argumento el nombre de la imagen antigua, si se añade imagen se borra
+        //si no se queda como estaba
         try {
             $imageName = $this->handleImageUpload($imageFile, $product->image);
         } catch (\RuntimeException $e) {
@@ -126,16 +129,17 @@ class ProductoService
     }
 
     public function eliminar(int $id): bool|string
-    {
+    {   
+
         $product = $this->productRepository->findById($id);
         if (!$product) {
             return 'El producto no existe.';
         }
-
+        //cuanta si ya se ha pedido
         if ($this->productRepository->countOrderItemsByProduct($id) > 0) {
             return 'No se puede eliminar el producto porque está asociado a uno o más pedidos.';
         }
-
+        //busca si existe la ruta de la imagen y con el unlink la elimina
         if (!empty($product->image)) {
             $imagePath = __DIR__ . '/../../public/uploads/images/' . $product->image;
             if (file_exists($imagePath)) {
@@ -151,21 +155,23 @@ class ProductoService
      * @throws \RuntimeException con el mensaje de error si falla.
      */
     private function handleImageUpload(?array $imageFile, string $oldImage = ''): string
-    {
+    {   
+        // si no ve ningun archivo o el nombre esta vacio devuelve la imagen antigua
         if (!is_array($imageFile) || ($imageFile['name'] ?? '') === '') {
             return $oldImage;
         }
-
+        // si hay algun error lanza excepcion
         if (($imageFile['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
             throw new \RuntimeException('No se pudo procesar la imagen subida.');
         }
 
+        //extrae la extension y comprueba si esta permitida
         $extension = strtolower(pathinfo((string)$imageFile['name'], PATHINFO_EXTENSION));
         $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
         if (!in_array($extension, $allowed, true)) {
             throw new \RuntimeException('El formato de imagen no esta permitido.');
         }
-
+        //comprueba que existe la carpeta de destino y sino crea una 0775
         $uploadDir = __DIR__ . '/../../public/uploads/images';
         if (!is_dir($uploadDir) && !mkdir($uploadDir, 0775, true) && !is_dir($uploadDir)) {
             throw new \RuntimeException('No se pudo crear la carpeta de imagenes.');
@@ -181,6 +187,8 @@ class ProductoService
             throw new \RuntimeException('No se pudo guardar la imagen en el servidor.');
         }
 
+
+        //si habia imagen antigua la borra del servidor
         if ($oldImage !== '') {
             $oldPath = $uploadDir . DIRECTORY_SEPARATOR . $oldImage;
             if (file_exists($oldPath)) {
@@ -188,6 +196,7 @@ class ProductoService
             }
         }
 
+        //devuelve el nombre del nuevo archivo que es lo que se guarda en la base de datos
         return $newName;
     }
 }
