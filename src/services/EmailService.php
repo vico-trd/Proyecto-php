@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Services\PdfService;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -57,7 +58,21 @@ class EmailService
         string $direccionEnvio
     ): void {
         $this->mailer->clearAddresses();
+        $this->mailer->clearAttachments();
         $this->mailer->addAddress($clienteEmail, $clienteNombre);
+
+        // Generar el PDF del pedido en memoria y adjuntarlo al correo
+        $pdfService = new PdfService();
+        $pdfBytes   = $pdfService->generarPedidoPdf(
+            $order,
+            $carrito,
+            $productos,
+            $clienteNombre,
+            $direccionEnvio
+        );
+        $nombreArchivo = 'pedido-' . $order->id . '.pdf';
+        // addStringAttachment(contenido, nombre, codificación, tipo MIME)
+        $this->mailer->addStringAttachment($pdfBytes, $nombreArchivo, 'base64', 'application/pdf');
 
         $this->mailer->isHTML(true);
         $this->mailer->Subject = 'Confirmación de pedido #' . $order->id . ' – Clothing Store';
