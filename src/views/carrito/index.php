@@ -92,12 +92,14 @@ foreach ($productos as $p) {
                                         <form method="POST" action="<?= BASE_URL ?>carrito/incrementar">
                                             <input type="hidden" name="producto_id" value="<?= $productoId ?>">
                                             <button type="submit" class="btn btn-outline-secondary btn-sm px-2 py-0" title="Aumentar cantidad"
-                                                <?= ((int)$cantidad >= $p->stock) ? 'disabled title="Stock máximo alcanzado"' : '' ?>>
+                                                <?= ((int)$cantidad >= 10 || (int)$cantidad >= $p->stock) ? 'disabled title="Límite de ' . (((int)$cantidad >= 10) ? '10 unidades' : 'stock') . ' alcanzado"' : '' ?>>
                                                 <i class="bi bi-plus"></i>
                                             </button>
                                         </form>
                                     </div>
-                                    <?php if ((int)$cantidad >= $p->stock): ?>
+                                    <?php if ((int)$cantidad >= 10): ?>
+                                        <small class="text-danger d-block mt-1">Máximo: 10 unidades</small>
+                                    <?php elseif ((int)$cantidad >= $p->stock): ?>
                                         <small class="text-danger d-block mt-1">Stock máx.</small>
                                     <?php endif; ?>
                                 </td>

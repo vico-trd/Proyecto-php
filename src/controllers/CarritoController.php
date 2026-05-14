@@ -12,6 +12,7 @@ class CarritoController extends BaseController
     private ProductoService $productoService;
     private OrderRepository $orderRepository;
     private OrderItemRepository $orderItemRepository;
+    private const CANTIDAD_MAXIMA = 10;
 
     public function __construct()
     {
@@ -68,11 +69,18 @@ class CarritoController extends BaseController
         $cantidadActual = (int)($_SESSION['carrito'][$productoId] ?? 0);
         $nuevaCantidad  = $cantidadActual + $cantidad;
 
+        if ($nuevaCantidad > self::CANTIDAD_MAXIMA) {
+            $nuevaCantidad = self::CANTIDAD_MAXIMA;
+            $_SESSION['carrito_error'] = 'La cantidad ha sido limitada a ' . self::CANTIDAD_MAXIMA . ' unidades.';
+        }
+
         if ($nuevaCantidad > $producto->stock) {
             $_SESSION['carrito_error'] = 'No hay suficiente stock para "' . htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') . '".';
             $this->redirect('carrito');
             return;
         }
+
+       
 
         $_SESSION['carrito'][$productoId] = $nuevaCantidad;
         $this->sincronizarConDB();
@@ -103,7 +111,9 @@ class CarritoController extends BaseController
 
         $cantidadActual = (int)$_SESSION['carrito'][$productoId];
 
-        if ($cantidadActual + 1 > $producto->stock) {
+        if ($cantidadActual >= self::CANTIDAD_MAXIMA) {
+            $_SESSION['carrito_error'] = 'Ya tienes el máximo de ' . self::CANTIDAD_MAXIMA . ' unidades de este producto.';
+        } elseif ($cantidadActual + 1 > $producto->stock) {
             $_SESSION['carrito_error'] = 'Stock maximo alcanzado para "' . htmlspecialchars($producto->name, ENT_QUOTES, 'UTF-8') . '".';
         } else {
             $_SESSION['carrito'][$productoId] = $cantidadActual + 1;
